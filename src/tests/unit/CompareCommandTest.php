@@ -5,6 +5,10 @@ use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Command\Command;
 use function QIT_CLI\get_manager_url;
 
+/**
+ * `qit compare` renders a comparison the QIT Manager computed. The comparison
+ * itself is tested in the Manager; the documents in data/compare are its output.
+ */
 class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	use MatchesSnapshots;
 
@@ -14,663 +18,193 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->application_tester = $this->make_application_tester();
+		App::setVar( 'mocked_requests', [] );
+	}
 
-		// A Manager without the compare endpoint, so these tests cover the local comparison.
+	/**
+	 * @return array<string,mixed>
+	 */
+	private function document( string $name ): array {
+		return json_decode( (string) file_get_contents( __DIR__ . "/data/compare/{$name}.json" ), true );
+	}
+
+	/**
+	 * @param array<string,mixed>|string $response The Manager's response body.
+	 */
+	private function mock_manager( $response ): void {
 		App::setVar(
 			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/compare' ),
-			(string) json_encode( [ 'code' => 'rest_no_route', 'message' => 'No route was found matching the URL and request method.' ] )
+			is_string( $response ) ? $response : (string) json_encode( $response )
 		);
 	}
 
 	/**
-	 * An activation run, the motivating case: which plugins fail to activate against
-	 * a given WooCommerce version.
-	 *
-	 * @param array<int,array<string,mixed>> $tests
-	 * @param array<string,mixed>            $overrides
-	 *
-	 * @return array<string,mixed>
+	 * @param array<string,mixed> $options
 	 */
-	private function make_run( int $id, array $tests, array $overrides = [] ): array {
-		$summary = [
-			'tests'   => count( $tests ),
-			'passed'  => count( array_filter( $tests, function ( $t ) {
-				return $t['status'] === 'passed';
-			} ) ),
-			'failed'  => count( array_filter( $tests, function ( $t ) {
-				return $t['status'] === 'failed';
-			} ) ),
-			'pending' => 0,
-			'skipped' => count( array_filter( $tests, function ( $t ) {
-				return $t['status'] === 'skipped';
-			} ) ),
-			'other'   => 0,
-			'start'   => 1706644023,
-			'stop'    => 1706644043,
-		];
-
-		$run = [
-			'test_run_id'              => $id,
-			'test_type'                => 'activation',
-			'wordpress_version'        => '6.7',
-			'woocommerce_version'      => '11.0.1',
-			'php_version'              => '8.2',
-			'extension_set'            => '',
-			'version'                  => '1.0.0',
-			'status'                   => $summary['failed'] > 0 ? 'failed' : 'success',
-			'woo_extension'            => [ 'name' => 'My WooCommerce Plugin' ],
-			'test_results_manager_url' => sprintf( 'https://qit.woo.com/results/%d.abc', $id ),
-			'created_at'               => '2025-01-15 10:30:00',
-			'update_complete'          => true,
-			'test_result_json'         => '',
-			'ctrf_json'                => json_encode( [
-				'reportFormat' => 'CTRF',
-				'specVersion'  => '0.1.0',
-				'results'      => [
-					'tool'    => [ 'name' => 'qit-activation' ],
-					'summary' => $summary,
-					'tests'   => $tests,
-					'extra'   => [
-						'qitPackageMetadata' => [
-							'packages' => [ [ 'packageId' => 'woocommerce/activation', 'version' => '1.2.0' ] ],
-						],
-					],
-				],
-			] ),
-		];
-
-		return array_merge( $run, $overrides );
+	private function compare( array $options = [] ): int {
+		return $this->application_tester->run( array_merge( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], $options ), [ 'capture_stderr_separately' => true ] );
 	}
 
-	/**
-	 * @param array<string,mixed> $extra
-	 *
-	 * @return array<string,mixed>
-	 */
-	private function test_case( string $name, string $status, array $extra = [] ): array {
-		return array_merge( [
-			'name'     => $name,
-			'status'   => $status,
-			'duration' => 1000,
-		], $extra );
+	private function display(): string {
+		return $this->application_tester->getDisplay();
 	}
 
-	/**
-	 * @param array<int,array<string,mixed>> $runs
-	 */
-	private function mock_runs( array $runs ): void {
-		$keyed = [];
-		foreach ( $runs as $run ) {
-			$keyed[ (string) $run['test_run_id'] ] = $run;
+	public function test_compare_human_output(): void {
+		$this->mock_manager( $this->document( 'human-output' ) );
+
+		$this->assertSame( Command::SUCCESS, $this->compare() );
+		$this->assertMatchesSnapshot( $this->display() );
+	}
+
+	public function test_compare_human_output_respects_limit(): void {
+		$this->mock_manager( $this->document( 'limit' ) );
+
+		$this->compare( [ '--limit' => '2' ] );
+
+		$this->assertStringContainsString( 'Introduced failures (5)', $this->display() );
+		$this->assertStringContainsString( '... and 3 more. Use --limit=0 to show all.', $this->display() );
+		$this->assertStringNotContainsString( 'plugin-4', $this->display() );
+	}
+
+	public function test_human_output_links_to_the_report_page(): void {
+		$this->mock_manager( [ 'report_url' => 'https://qit.woo.com/?qit_compare=1001.abc~1002.def' ] + $this->document( 'human-output' ) );
+
+		$this->compare();
+
+		$this->assertStringContainsString( 'Report: https://qit.woo.com/?qit_compare=1001.abc~1002.def', $this->display() );
+	}
+
+	public function test_canary_human_output_names_every_bucket(): void {
+		$this->mock_manager( $this->document( 'canary-every-bucket' ) );
+
+		$this->assertSame( Command::SUCCESS, $this->compare() );
+
+		foreach ( [ 'Ecosystem canary findings', 'Introduced (1)', 'Moved between probes (1)', 'Not looked for in run B (1)', 'Resolved (0)', 'Probe state changes (1)', 'could not be judged' ] as $expected ) {
+			$this->assertStringContainsString( $expected, $this->display() );
 		}
-
-		App::setVar(
-			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
-			json_encode( $keyed )
-		);
 	}
 
-	/**
-	 * @param array<string,mixed> $args
-	 *
-	 * @return array{0:int,1:array<string,mixed>}
-	 */
-	private function run_compare_json( array $args = [] ): array {
-		$exit_code = $this->application_tester->run( array_merge( [
-			'command'  => 'compare',
-			'run_a'    => '1001',
-			'run_b'    => '1002',
-			'--format' => 'json',
-		], $args ), [ 'capture_stderr_separately' => true ] );
+	public function test_the_summary_does_not_call_a_move_a_regression(): void {
+		$this->mock_manager( $this->document( 'canary-move-not-regression' ) );
 
-		$decoded = json_decode( $this->application_tester->getDisplay(), true );
-		$this->assertIsArray( $decoded, 'Output must be valid JSON. Got: ' . $this->application_tester->getDisplay() );
+		$this->compare();
 
-		return [ $exit_code, $decoded ];
+		$this->assertStringContainsString( 'Moved between probes (1)', $this->display() );
+		$this->assertStringContainsString( 'No failures introduced by run B.', $this->display() );
 	}
 
-	/**
-	 * The motivating case: a WooCommerce bump makes one plugin newly fail to activate,
-	 * and fixes another.
-	 */
-	public function test_compare_buckets_introduced_resolved_and_still_failing(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-b', 'failed' ),
-				$this->test_case( 'plugin-c', 'failed' ),
-				$this->test_case( 'plugin-d', 'passed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'failed' ),
-				$this->test_case( 'plugin-b', 'passed' ),
-				$this->test_case( 'plugin-c', 'failed' ),
-				$this->test_case( 'plugin-d', 'passed' ),
-			], [ 'woocommerce_version' => '11.1.0' ] ),
+	public function test_the_report_reconciles_a_move_with_the_test_buckets(): void {
+		$this->mock_manager( $this->document( 'canary-move-reconciled' ) );
+
+		$this->compare();
+
+		$this->assertStringContainsString( 'Neither is a change in what the build does', $this->display() );
+	}
+
+	public function test_the_summary_separates_findings_from_unexplained_failures(): void {
+		$this->mock_manager( $this->document( 'canary-findings-and-failures' ) );
+
+		$this->compare();
+
+		$this->assertStringContainsString( 'Run B introduced 1 canary finding(s) and 1 unexplained failure(s).', $this->display() );
+	}
+
+	public function test_the_summary_names_findings_when_that_is_all_there_is(): void {
+		$this->mock_manager( $this->document( 'canary-findings-only' ) );
+
+		$this->compare();
+
+		$this->assertStringContainsString( 'Run B introduced 2 canary finding(s).', $this->display() );
+	}
+
+	public function test_json_output_is_the_managers_document(): void {
+		$document = $this->document( 'canary-every-bucket' );
+		$this->mock_manager( $document );
+
+		$this->assertSame( Command::SUCCESS, $this->compare( [ '--format' => 'json' ] ) );
+		$this->assertSame( $document, json_decode( $this->display(), true ) );
+	}
+
+	public function test_asks_the_manager_once(): void {
+		$this->mock_manager( $this->document( 'human-output' ) );
+
+		$this->compare( [ '--format' => 'json' ] );
+
+		$requests = App::getVar( 'mocked_requests' );
+		$this->assertCount( 1, $requests );
+		$this->assertStringEndsWith( '/wp-json/cd/v1/compare', $requests[0]['url'] );
+		$this->assertSame( 'POST', $requests[0]['method'] );
+		$this->assertSame( '1001', $requests[0]['post_body']['a'] );
+		$this->assertSame( '1002', $requests[0]['post_body']['b'] );
+	}
+
+	public function test_exit_code_follows_the_managers_verdict(): void {
+		$this->mock_manager( [ 'has_regressions' => true ] + $this->document( 'human-output' ) );
+		$this->assertSame( Command::FAILURE, $this->compare( [ '--exit-code' => true ] ) );
+
+		$this->mock_manager( [ 'has_regressions' => false ] + $this->document( 'human-output' ) );
+		$this->assertSame( Command::SUCCESS, $this->compare( [ '--exit-code' => true ] ) );
+	}
+
+	public function test_without_exit_code_a_regression_still_exits_zero(): void {
+		$this->mock_manager( [ 'has_regressions' => true ] + $this->document( 'human-output' ) );
+
+		$this->assertSame( Command::SUCCESS, $this->compare() );
+	}
+
+	public function test_a_comparison_the_manager_refuses_is_an_error(): void {
+		$this->mock_manager( [ 'message' => 'Cannot compare a "activation" run against a "woo-api" run.' ] );
+
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'Cannot compare a "activation" run against a "woo-api" run.', $this->display() );
+	}
+
+	public function test_an_unknown_run_says_what_to_do_next(): void {
+		$this->mock_manager( [ 'message' => 'Test run with ID 1002 does not exist.' ] );
+
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'Could not compare test runs 1001 and 1002: Test run with ID 1002 does not exist.', $this->display() );
+		$this->assertStringContainsString( 'qit list-tests', $this->display() );
+	}
+
+	public function test_a_network_error_is_passed_through(): void {
+		$this->mock_manager( 'exception: Could not resolve host: qit.woo.com' );
+
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'Could not resolve host: qit.woo.com', $this->display() );
+	}
+
+	public function test_a_manager_without_the_endpoint_is_an_error_not_a_local_comparison(): void {
+		$this->mock_manager( [
+			'code'    => 'rest_no_route',
+			'message' => 'No route was found matching the URL and request method.',
 		] );
 
-		list( $exit_code, $result ) = $this->run_compare_json();
-
-		$this->assertSame( Command::SUCCESS, $exit_code, 'Reporting a difference is not a failure of the command' );
-
-		$this->assertSame( [ 'plugin-a' ], array_column( $result['tests']['introduced'], 'key' ) );
-		$this->assertSame( [ 'plugin-b' ], array_column( $result['tests']['resolved'], 'key' ) );
-		$this->assertSame( [ 'plugin-c' ], array_column( $result['tests']['still_failing'], 'key' ) );
-		$this->assertSame( 1, $result['totals']['unchanged'] );
-		$this->assertSame( [], $result['tests']['added'] );
-		$this->assertSame( [], $result['tests']['removed'] );
-
-		$this->assertSame( 'passed', $result['tests']['introduced'][0]['status']['a'] );
-		$this->assertSame( 'failed', $result['tests']['introduced'][0]['status']['b'] );
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'This QIT Manager cannot compare test runs yet.', $this->display() );
+		$this->assertCount( 1, App::getVar( 'mocked_requests' ) );
 	}
 
-	/**
-	 * --exit-code turns the result into a gate, the way "git diff --exit-code" does.
-	 * A regression on a shared test is what it gates on.
-	 */
-	public function test_exit_code_option_gates_on_an_introduced_failure(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'failed' ) ] ),
-		] );
+	public function test_a_document_in_a_newer_format_asks_for_an_update(): void {
+		$this->mock_manager( [ 'schema' => 2 ] + $this->document( 'human-output' ) );
 
-		$exit_code = $this->application_tester->run( [
-			'command'     => 'compare',
-			'run_a'       => '1001',
-			'run_b'       => '1002',
-			'--exit-code' => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::FAILURE, $exit_code );
-	}
-
-	/**
-	 * A new test that fails is a failure introduced by run B, so it gates too.
-	 */
-	public function test_exit_code_option_gates_on_a_new_failing_test(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-new', 'failed' ),
-			] ),
-		] );
-
-		$exit_code = $this->application_tester->run( [
-			'command'     => 'compare',
-			'run_a'       => '1001',
-			'run_b'       => '1002',
-			'--exit-code' => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::FAILURE, $exit_code );
-	}
-
-	/**
-	 * --exit-code gates on introduced failures only. A run that resolved failures and
-	 * introduced none is a pass, even though plenty changed.
-	 */
-	public function test_exit_code_option_passes_when_nothing_was_introduced(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'failed' ),
-				$this->test_case( 'plugin-gone', 'failed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-new', 'passed' ),
-			] ),
-		] );
-
-		$exit_code = $this->application_tester->run( [
-			'command'     => 'compare',
-			'run_a'       => '1001',
-			'run_b'       => '1002',
-			'--exit-code' => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::SUCCESS, $exit_code );
-	}
-
-	/**
-	 * --exit-code gates on the result, never on a failure to produce one: an
-	 * unfetchable run must not be reported as "no regressions".
-	 */
-	public function test_exit_code_option_still_reports_a_real_error(): void {
-		App::setVar(
-			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
-			'exception: "Test run with ID 1001 does not exist."'
-		);
-
-		$exit_code = $this->application_tester->run( [
-			'command'     => 'compare',
-			'run_a'       => '1001',
-			'run_b'       => '1002',
-			'--exit-code' => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-	}
-
-	/**
-	 * Tests that only exist on one side are reported separately, so a failing test
-	 * that simply disappeared does not read as "resolved".
-	 */
-	public function test_compare_reports_added_and_removed_tests_separately(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-gone', 'failed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-new', 'passed' ),
-			] ),
-		] );
-
-		list( $exit_code, $result ) = $this->run_compare_json();
-
-		$this->assertSame( Command::SUCCESS, $exit_code );
-		$this->assertSame( [ 'plugin-new' ], array_column( $result['tests']['added'], 'key' ) );
-		$this->assertSame( [ 'plugin-gone' ], array_column( $result['tests']['removed'], 'key' ) );
-		$this->assertSame( [], $result['tests']['resolved'], 'A test that disappeared is not a resolved failure' );
-	}
-
-	/**
-	 * Annotations are diffed per test, which is how packages get their structured
-	 * data compared without this command knowing what it means.
-	 */
-	public function test_compare_diffs_annotations(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'failed', [
-					'extra' => [
-						'annotations' => [
-							[ 'type' => 'contract-id', 'description' => 'woocommerce/orders#create' ],
-							[ 'type' => 'finding', 'description' => 'deprecated-hook' ],
-						],
-					],
-				] ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'failed', [
-					'extra' => [
-						'annotations' => [
-							[ 'type' => 'contract-id', 'description' => 'woocommerce/orders#create' ],
-							[ 'type' => 'finding', 'description' => 'missing-nonce' ],
-						],
-					],
-				] ),
-			] ),
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertSame(
-			[ [ 'test' => 'plugin-a', 'type' => 'finding', 'description' => 'missing-nonce' ] ],
-			$result['annotations']['added']
-		);
-		$this->assertSame(
-			[ [ 'test' => 'plugin-a', 'type' => 'finding', 'description' => 'deprecated-hook' ] ],
-			$result['annotations']['removed']
-		);
-	}
-
-	/**
-	 * One differing dimension is the variable under test, so the runs stay comparable.
-	 */
-	public function test_guard_accepts_a_single_differing_dimension(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ], [ 'woocommerce_version' => '11.1.0' ] ),
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertTrue( $result['guard']['comparable'] );
-		$this->assertSame( [ 'woocommerce_version' ], array_column( $result['guard']['differences'], 'field' ) );
-		$this->assertSame( [], $result['guard']['warnings'] );
-	}
-
-	/**
-	 * Two or more differing dimensions cannot attribute a result change to any of
-	 * them, so the comparison is flagged rather than silently trusted.
-	 */
-	public function test_guard_flags_runs_that_differ_in_more_than_one_dimension(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ], [
-				'woocommerce_version' => '11.1.0',
-				'php_version'         => '8.3',
-			] ),
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertFalse( $result['guard']['comparable'] );
-		$this->assertSame(
-			[ 'woocommerce_version', 'php_version' ],
-			array_column( $result['guard']['differences'], 'field' )
-		);
-		$this->assertCount( 1, $result['guard']['warnings'] );
-		$this->assertStringContainsString( 'differ in 2 dimensions', $result['guard']['warnings'][0] );
-	}
-
-	/**
-	 * Two test types are two different populations of tests. Comparing them would
-	 * degenerate to "everything removed, everything added", and - because a new
-	 * failing test counts as a failure introduced by run B - would report a
-	 * regression that says nothing about either run. So it is refused outright.
-	 */
-	public function test_compare_rejects_runs_of_different_test_types(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [ $this->test_case( 'GET /orders', 'failed' ) ], [ 'test_type' => 'woo-api' ] ),
-		] );
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$display = $this->application_tester->getDisplay();
-
-		$this->assertSame( Command::INVALID, $exit_code, 'A cross-test-type comparison must not report a regression' );
-		$this->assertStringContainsString( 'Cannot compare a "activation" run against a "woo-api" run', $display );
-		$this->assertStringContainsString( '1001 is "activation"', $display );
-		$this->assertStringContainsString( '1002 is "woo-api"', $display );
-	}
-
-	/**
-	 * Run records for the Woo E2E suite carry two test_type spellings, because
-	 * run:woo-e2e submits "woo-e2e" with --extension-set and "e2e" without one. Strict
-	 * equality refuses that pairing on purpose, naming both types, rather than
-	 * special-casing an equivalence that would then have to track the CLI's naming.
-	 */
-	public function test_compare_rejects_the_woo_e2e_and_e2e_test_type_spellings(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'checkout', 'passed' ) ], [ 'test_type' => 'woo-e2e' ] ),
-			$this->make_run( 1002, [ $this->test_case( 'checkout', 'passed' ) ], [ 'test_type' => 'e2e' ] ),
-		] );
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'Cannot compare a "woo-e2e" run against a "e2e" run', $this->application_tester->getDisplay() );
-	}
-
-	/**
-	 * A run whose test type is missing is not silently treated as matching anything.
-	 */
-	public function test_compare_rejects_a_run_with_an_unknown_test_type(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ], [ 'test_type' => '' ] ),
-		] );
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'against a "unknown" run', $this->application_tester->getDisplay() );
-	}
-
-	/**
-	 * A package version bump is a context difference, read out of qitPackageMetadata.
-	 */
-	public function test_guard_detects_a_test_package_version_change(): void {
-		$run_b            = $this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ] );
-		$ctrf             = json_decode( $run_b['ctrf_json'], true );
-		$ctrf['results']['extra']['qitPackageMetadata']['packages'][0]['version'] = '1.3.0';
-		$run_b['ctrf_json'] = json_encode( $ctrf );
-
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$run_b,
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertSame( [ 'test_packages' ], array_column( $result['guard']['differences'], 'field' ) );
-		$this->assertSame( 'woocommerce/activation@1.3.0', $result['runs']['b']['context']['test_packages'] );
-	}
-
-	/**
-	 * Summary counters are reported side by side with a delta.
-	 */
-	public function test_compare_reports_summary_counts_side_by_side(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-b', 'passed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-b', 'failed' ),
-			] ),
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertSame( 2, $result['summary']['a']['passed'] );
-		$this->assertSame( 1, $result['summary']['b']['passed'] );
-		$this->assertSame( -1, $result['summary']['delta']['passed'] );
-		$this->assertSame( 1, $result['summary']['delta']['failed'] );
-		$this->assertSame( 0, $result['summary']['delta']['tests'] );
-	}
-
-	/**
-	 * CTRF does not guarantee unique test names, so duplicates must not collapse.
-	 */
-	public function test_compare_keeps_duplicate_test_names_distinct(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'same-name', 'passed' ),
-				$this->test_case( 'same-name', 'passed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'same-name', 'passed' ),
-				$this->test_case( 'same-name', 'failed' ),
-			] ),
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertSame( [ 'same-name #2' ], array_column( $result['tests']['introduced'], 'key' ) );
-		$this->assertSame( 1, $result['totals']['unchanged'] );
-	}
-
-	/**
-	 * A suite qualifies the test name, so two suites can carry the same test name.
-	 */
-	public function test_compare_keys_tests_by_suite_and_name(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'checkout', 'passed', [ 'suite' => 'cart' ] ),
-				$this->test_case( 'checkout', 'passed', [ 'suite' => 'admin' ] ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'checkout', 'failed', [ 'suite' => 'cart' ] ),
-				$this->test_case( 'checkout', 'passed', [ 'suite' => 'admin' ] ),
-			] ),
-		] );
-
-		list( , $result ) = $this->run_compare_json();
-
-		$this->assertSame( [ 'cart :: checkout' ], array_column( $result['tests']['introduced'], 'key' ) );
-	}
-
-	/**
-	 * A test type that does not report CTRF cannot be compared, and says so.
-	 */
-	public function test_compare_rejects_runs_without_ctrf_results(): void {
-		$run_a = $this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] );
-		$run_b = $this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ] );
-
-		$run_b['ctrf_json'] = '';
-
-		$this->mock_runs( [ $run_a, $run_b ] );
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'has no CTRF results to compare', $this->application_tester->getDisplay() );
-	}
-
-	public function test_compare_rejects_a_missing_run(): void {
-		$this->mock_runs( [ $this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ) ] );
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'Test run 1002 was not found', $this->application_tester->getDisplay() );
-	}
-
-	/**
-	 * A mistyped run ID is the likeliest way the fetch fails. The Manager answers it
-	 * with a 500 whose body is a bare JSON string, so the message must be unwrapped
-	 * rather than pasted in with its quotes, and must say what to do next.
-	 */
-	public function test_compare_explains_a_test_run_that_does_not_exist(): void {
-		App::setVar(
-			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
-			'exception: "Test run with ID 511324 does not exist."'
-		);
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '511324',
-			'run_b'   => '5113022',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$display = $this->application_tester->getDisplay();
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'Could not fetch test runs 511324 and 5113022', $display );
-		$this->assertStringContainsString( 'Test run with ID 511324 does not exist.', $display );
-		$this->assertStringContainsString( 'qit list-tests', $display );
-
-		// The Manager's bare JSON string must not reach the user still quoted.
-		$this->assertStringNotContainsString( '"Test run with ID', $display );
-	}
-
-	/**
-	 * A plain error message is passed through untouched.
-	 */
-	public function test_compare_passes_through_a_plain_error_message(): void {
-		App::setVar(
-			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
-			'exception: Could not resolve host: qit.woo.com'
-		);
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'Could not resolve host: qit.woo.com', $this->application_tester->getDisplay() );
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'format version 2', $this->display() );
+		$this->assertStringContainsString( 'Update the QIT CLI', $this->display() );
 	}
 
 	public function test_compare_rejects_comparing_a_run_against_itself(): void {
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1001',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'against itself', $this->application_tester->getDisplay() );
+		$this->assertSame( Command::INVALID, $this->compare( [ 'run_b' => '1001' ] ) );
+		$this->assertStringContainsString( 'against itself', $this->display() );
+		$this->assertCount( 0, App::getVar( 'mocked_requests' ) );
 	}
 
 	public function test_compare_rejects_an_unknown_format(): void {
-		$exit_code = $this->application_tester->run( [
-			'command'  => 'compare',
-			'run_a'    => '1001',
-			'run_b'    => '1002',
-			'--format' => 'yaml',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'Invalid --format', $this->application_tester->getDisplay() );
-	}
-
-	/**
-	 * The human output is the default, and is what most people will read.
-	 */
-	public function test_compare_human_output(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-b', 'failed' ),
-				$this->test_case( 'plugin-c', 'failed' ),
-				$this->test_case( 'plugin-gone', 'passed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'failed', [
-					'extra' => [ 'annotations' => [ [ 'type' => 'error', 'description' => 'Fatal on activation' ] ] ],
-				] ),
-				$this->test_case( 'plugin-b', 'passed' ),
-				$this->test_case( 'plugin-c', 'failed' ),
-				$this->test_case( 'plugin-new', 'skipped' ),
-			], [ 'woocommerce_version' => '11.1.0' ] ),
-		] );
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertSame( Command::SUCCESS, $exit_code );
-		$this->assertMatchesSnapshot( $this->application_tester->getDisplay() );
-	}
-
-	/**
-	 * Human output truncates long sections, and says how to see the rest.
-	 */
-	public function test_compare_human_output_respects_limit(): void {
-		$a_tests = [];
-		$b_tests = [];
-
-		for ( $i = 1; $i <= 5; $i++ ) {
-			$a_tests[] = $this->test_case( 'plugin-' . $i, 'passed' );
-			$b_tests[] = $this->test_case( 'plugin-' . $i, 'failed' );
-		}
-
-		$this->mock_runs( [
-			$this->make_run( 1001, $a_tests ),
-			$this->make_run( 1002, $b_tests ),
-		] );
-
-		$this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-			'--limit' => '2',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$display = $this->application_tester->getDisplay();
-
-		$this->assertStringContainsString( 'Introduced failures (5)', $display );
-		$this->assertStringContainsString( '... and 3 more. Use --limit=0 to show all.', $display );
-		$this->assertStringNotContainsString( 'plugin-4', $display );
+		$this->assertSame( Command::INVALID, $this->compare( [ '--format' => 'yaml' ] ) );
+		$this->assertStringContainsString( 'Invalid --format', $this->display() );
 	}
 }

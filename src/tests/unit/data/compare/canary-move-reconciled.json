@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "runs": {
+    "a": {
+      "id": "1001",
+      "status": "failed",
+      "created_at": "2025-01-15 10:30:00",
+      "result_url": "https://qit.woo.com/results/1001.abc",
+      "context": {
+        "test_type": "e2e",
+        "wordpress_version": "6.7",
+        "woocommerce_version": "11.0.0-rc.1",
+        "php_version": "8.2",
+        "extension_set": "",
+        "sut": "WooCommerce",
+        "sut_version": "1.0.0",
+        "test_packages": "",
+        "canary_profile": ""
+      }
+    },
+    "b": {
+      "id": "1002",
+      "status": "failed",
+      "created_at": "2025-01-15 10:30:00",
+      "result_url": "https://qit.woo.com/results/1002.abc",
+      "context": {
+        "test_type": "e2e",
+        "wordpress_version": "6.7",
+        "woocommerce_version": "11.0.0-rc.1",
+        "php_version": "8.2",
+        "extension_set": "",
+        "sut": "WooCommerce",
+        "sut_version": "1.0.0",
+        "test_packages": "",
+        "canary_profile": ""
+      }
+    }
+  },
+  "guard": {
+    "comparable": true,
+    "differences": [],
+    "warnings": []
+  },
+  "summary": {
+    "a": {
+      "tests": 2,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0
+    },
+    "b": {
+      "tests": 2,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0
+    },
+    "delta": {
+      "tests": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0
+    }
+  },
+  "tests": {
+    "introduced": [
+      {
+        "key": "woo-canary.pricing.drift - explores something",
+        "name": "woo-canary.pricing.drift - explores something",
+        "suite": "",
+        "status": {
+          "a": "passed",
+          "b": "failed"
+        },
+        "duration": {
+          "a": 1000,
+          "b": 1000
+        },
+        "message": ""
+      }
+    ],
+    "resolved": [
+      {
+        "key": "woo-canary.checkout.custom-fields - explores something",
+        "name": "woo-canary.checkout.custom-fields - explores something",
+        "suite": "",
+        "status": {
+          "a": "failed",
+          "b": "passed"
+        },
+        "duration": {
+          "a": 1000,
+          "b": 1000
+        },
+        "message": ""
+      }
+    ],
+    "still_failing": [],
+    "status_changed": [],
+    "added": [],
+    "removed": [],
+    "unchanged_count": 0
+  },
+  "annotations": {
+    "added": [],
+    "removed": []
+  },
+  "totals": {
+    "introduced": 1,
+    "resolved": 1,
+    "still_failing": 0,
+    "status_changed": 0,
+    "added": 0,
+    "removed": 0,
+    "unchanged": 0,
+    "annotations": 0,
+    "regressions": 0
+  },
+  "canary": {
+    "findings": {
+      "introduced": [],
+      "resolved": [],
+      "moved": [
+        {
+          "signature": "fatal:Uncaught Error @ class-wc-queue.php",
+          "type": "fatal",
+          "from": [
+            {
+              "key": "fatal:woo-canary.checkout.custom-fields:Uncaught Error @ class-wc-queue.php",
+              "probe": "woo-canary.checkout.custom-fields",
+              "test": "woo-canary.checkout.custom-fields - explores something",
+              "surface": "classic-checkout"
+            }
+          ],
+          "to": [
+            {
+              "key": "fatal:woo-canary.pricing.drift:Uncaught Error @ class-wc-queue.php",
+              "probe": "woo-canary.pricing.drift",
+              "test": "woo-canary.pricing.drift - explores something",
+              "surface": "classic-checkout"
+            }
+          ]
+        }
+      ],
+      "unverified": [],
+      "pre_existing": []
+    },
+    "probes": {
+      "a": {
+        "woo-canary.checkout.custom-fields": "complete",
+        "woo-canary.pricing.drift": "complete"
+      },
+      "b": {
+        "woo-canary.checkout.custom-fields": "complete",
+        "woo-canary.pricing.drift": "complete"
+      },
+      "changed": []
+    },
+    "warnings": [],
+    "totals": {
+      "introduced": 0,
+      "resolved": 0,
+      "moved": 1,
+      "unverified": 0,
+      "pre_existing": 0
+    }
+  },
+  "has_regressions": false
+}

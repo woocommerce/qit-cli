@@ -2,9 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Compare\CanaryComparison;
-use QIT_CLI\Compare\RunComparison;
-use QIT_CLI\Compare\RunSnapshot;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
@@ -22,6 +19,30 @@ class CompareCommand extends QITCommand {
 	 * How many entries each section prints before it is truncated, unless --limit says otherwise.
 	 */
 	private const DEFAULT_LIMIT = 25;
+
+	/**
+	 * The comparison document version this CLI can render.
+	 */
+	private const SCHEMA = 1;
+
+	/**
+	 * Context rows, in display order, for schema 1.
+	 */
+	private const CONTEXT_LABELS = [
+		'test_type'           => 'Test type',
+		'wordpress_version'   => 'WordPress',
+		'woocommerce_version' => 'WooCommerce',
+		'php_version'         => 'PHP',
+		'extension_set'       => 'Extension set',
+		'sut'                 => 'Extension',
+		'sut_version'         => 'Extension version',
+		'test_packages'       => 'Test packages',
+		'canary_profile'      => 'Canary profile',
+	];
+
+	private const SUMMARY_KEYS = [ 'tests', 'passed', 'failed', 'skipped', 'pending', 'other' ];
+
+	private const PROBE_COMPLETE = 'complete';
 
 	protected function configure(): void {
 		parent::configure();
@@ -65,9 +86,8 @@ paths from the machine that ran the tests, and those are gone once the job ends.
 A test package that wants its data compared must emit it as an annotation, not
 as an attachment.
 
-The QIT Manager computes the comparison, and human output ends with a link to
-its report page. Against a Manager that predates that, the comparison is
-computed here instead, with the same result and no link.
+The QIT Manager computes the comparison; this command renders it, and human
+output ends with a link to the comparison's report page.
 
 When the two runs differ in more than one dimension (WordPress, PHP, package
 version, and so on), the comparison is still printed but flagged, because a
@@ -109,7 +129,7 @@ HELP
 		}
 
 		try {
-			$comparison = $this->fetch_comparison( $run_a, $run_b ) ?? $this->compare_locally( $run_a, $run_b );
+			$comparison = $this->fetch_comparison( $run_a, $run_b );
 		} catch ( \RuntimeException $e ) {
 			$this->render_error( $e->getMessage(), $output );
 
@@ -138,14 +158,13 @@ HELP
 	}
 
 	/**
-	 * Ask the Manager for the comparison. Null when the Manager predates the endpoint,
-	 * so the caller can compare locally instead.
+	 * The Manager computes the comparison; this command only renders it.
 	 *
-	 * @return array<string,mixed>|null
+	 * @return array<string,mixed>
 	 *
 	 * @throws \RuntimeException If the Manager could not compare the runs.
 	 */
-	private function fetch_comparison( string $run_a, string $run_b ): ?array {
+	private function fetch_comparison( string $run_a, string $run_b ): array {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/compare' ) )
 				->with_method( 'POST' )
@@ -168,12 +187,19 @@ HELP
 
 		$response = json_decode( $json, true );
 
-		if ( is_array( $response ) && isset( $response['schema'] ) ) {
-			return $response;
+		if ( is_array( $response ) && ( $response['code'] ?? '' ) === 'rest_no_route' ) {
+			throw new \RuntimeException( 'This QIT Manager cannot compare test runs yet.' );
 		}
 
-		if ( is_array( $response ) && ( $response['code'] ?? '' ) === 'rest_no_route' ) {
-			return null;
+		if ( is_array( $response ) && isset( $response['schema'] ) ) {
+			if ( (int) $response['schema'] !== self::SCHEMA ) {
+				throw new \RuntimeException( sprintf(
+					"This comparison is in format version %d, which this version of the QIT CLI cannot read.\nUpdate the QIT CLI and try again.",
+					(int) $response['schema']
+				) );
+			}
+
+			return $response;
 		}
 
 		$message = is_array( $response ) && isset( $response['message'] ) && is_string( $response['message'] )
@@ -186,112 +212,6 @@ HELP
 			$run_b,
 			$message
 		) );
-	}
-
-	/**
-	 * The comparison as older Managers need it: fetched runs, compared here.
-	 *
-	 * @return array<string,mixed>
-	 *
-	 * @throws \RuntimeException If the runs could not be fetched or compared.
-	 */
-	private function compare_locally( string $run_a, string $run_b ): array {
-		$test_runs = $this->fetch_runs( $run_a, $run_b );
-
-		$snapshot_a = RunSnapshot::from_manager_run( $run_a, $this->pick_run( $test_runs, $run_a ) );
-		$snapshot_b = RunSnapshot::from_manager_run( $run_b, $this->pick_run( $test_runs, $run_b ) );
-
-		$this->assert_same_test_type( $snapshot_a, $snapshot_b );
-
-		$comparison = new RunComparison( $snapshot_a, $snapshot_b );
-
-		return array_merge( $comparison->to_array(), [ 'has_regressions' => $comparison->has_regressions() ] );
-	}
-
-	/**
-	 * Fetch both runs in a single request, so the two sides of the comparison always
-	 * come from the same read of the Manager.
-	 *
-	 * @return array<int|string,mixed>
-	 *
-	 * @throws \RuntimeException If the runs could not be fetched.
-	 */
-	private function fetch_runs( string $run_a, string $run_b ): array {
-		try {
-			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-multiple' ) )
-				->with_method( 'POST' )
-				->with_post_body( [
-					'test_run_ids' => $run_a . ',' . $run_b,
-				] )
-
-				/*
-				 * The Manager answers an unknown test run ID with a 500, which a retry can
-				 * only reproduce. A mistyped ID is the likeliest way this call fails, and
-				 * retrying it buys the user three alarming lines and up to fifteen seconds
-				 * of sleeping before the same error. A compare reads nothing and changes
-				 * nothing, so it is cheap to run again if the Manager really was blipping.
-				 */
-				->with_retry( 0 )
-				->request();
-		} catch ( \Exception $e ) {
-			throw new \RuntimeException( sprintf(
-				"Could not fetch test runs %s and %s: %s\nCheck that both IDs are correct and belong to this account. Run \"qit list-tests\" to see your recent test runs.",
-				$run_a,
-				$run_b,
-				$this->unwrap_manager_message( $e->getMessage() )
-			), 0, $e );
-		}
-
-		$test_runs = json_decode( $json, true );
-
-		if ( ! is_array( $test_runs ) ) {
-			throw new \RuntimeException( 'The Manager returned an unexpected response for these test runs.' );
-		}
-
-		return $test_runs;
-	}
-
-	/**
-	 * Refuse to compare runs of different test types.
-	 *
-	 * Two test types are two different populations of tests, so the diff degenerates
-	 * to "every test was removed, every other test was added" - and, because a new
-	 * failing test counts as a failure introduced by run B, it would report a
-	 * regression that says nothing about either run.
-	 *
-	 * The check is strict string equality on the run record's test_type, deliberately.
-	 *
-	 * One consequence is worth knowing. This CLI has changed which test_type it submits
-	 * for run:woo-e2e more than once (99db9c61, b25740f6, b8e41ff2), and today the two
-	 * paths of that command still disagree: --extension-set submits "woo-e2e", while
-	 * without one it falls through to RunE2ECommand and submits "e2e". So run records
-	 * for the Woo E2E suite carry both spellings, and two such runs are refused here
-	 * even though b8e41ff2 settled on "woo-e2e is a flavour of e2e".
-	 *
-	 * Strict equality is kept anyway: this command exists to compare two runs of the
-	 * same type, and the error message names both types, so the case reads as what it
-	 * is rather than as a silent wrong answer.
-	 *
-	 * @throws \RuntimeException If the two runs are of different test types.
-	 */
-	private function assert_same_test_type( RunSnapshot $a, RunSnapshot $b ): void {
-		if ( $a->context['test_type'] === $b->context['test_type'] ) {
-			return;
-		}
-
-		throw new \RuntimeException( sprintf(
-			'Cannot compare a "%s" run against a "%s" run. Only two runs of the same test type share a population of tests. Test run %s is "%s" and test run %s is "%s".',
-			$this->describe_test_type( $a ),
-			$this->describe_test_type( $b ),
-			$a->id,
-			$this->describe_test_type( $a ),
-			$b->id,
-			$this->describe_test_type( $b )
-		) );
-	}
-
-	private function describe_test_type( RunSnapshot $run ): string {
-		return $run->context['test_type'] !== '' ? $run->context['test_type'] : 'unknown';
 	}
 
 	/**
@@ -312,29 +232,6 @@ HELP
 		}
 
 		return $message;
-	}
-
-	/**
-	 * @param array<int|string,mixed> $test_runs
-	 *
-	 * @return array<string,mixed>
-	 *
-	 * @throws \RuntimeException If the run is not in the response.
-	 */
-	private function pick_run( array $test_runs, string $run_id ): array {
-		if ( isset( $test_runs[ $run_id ] ) && is_array( $test_runs[ $run_id ] ) ) {
-			return $test_runs[ $run_id ];
-		}
-
-		// The Manager keys the response by test run ID, but fall back to a scan rather
-		// than failing over a key that came back as an int, a string or padded.
-		foreach ( $test_runs as $test_run ) {
-			if ( is_array( $test_run ) && isset( $test_run['test_run_id'] ) && (string) $test_run['test_run_id'] === $run_id ) {
-				return $test_run;
-			}
-		}
-
-		throw new \RuntimeException( sprintf( 'Test run %s was not found.', $run_id ) );
 	}
 
 	/**
@@ -449,7 +346,7 @@ HELP
 
 		$rows = [];
 
-		foreach ( RunSnapshot::CONTEXT_LABELS as $field => $label ) {
+		foreach ( self::CONTEXT_LABELS as $field => $label ) {
 			$a_value = $a_context[ $field ] ?? '';
 			$b_value = $b_context[ $field ] ?? '';
 
@@ -489,7 +386,7 @@ HELP
 	private function render_summary( array $summary, OutputInterface $output ): void {
 		$rows = [];
 
-		foreach ( RunSnapshot::SUMMARY_KEYS as $key ) {
+		foreach ( self::SUMMARY_KEYS as $key ) {
 			$delta  = $summary['delta'][ $key ];
 			$rows[] = [
 				ucfirst( $key ),
@@ -662,11 +559,11 @@ HELP
 			$parts[] = 'fixtures: ' . implode( ' + ', $finding['fixtures'] );
 		}
 
-		if ( isset( $finding['probe_state'] ) && $finding['probe_state'] !== CanaryComparison::STATE_COMPLETE ) {
+		if ( isset( $finding['probe_state'] ) && $finding['probe_state'] !== self::PROBE_COMPLETE ) {
 			$parts[] = 'run B probe: ' . $finding['probe_state'];
 		}
 
-		if ( isset( $finding['baseline_probe_state'] ) && $finding['baseline_probe_state'] !== CanaryComparison::STATE_COMPLETE ) {
+		if ( isset( $finding['baseline_probe_state'] ) && $finding['baseline_probe_state'] !== self::PROBE_COMPLETE ) {
 			$parts[] = 'run A probe: ' . $finding['baseline_probe_state'];
 		}
 
