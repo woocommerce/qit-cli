@@ -65,6 +65,10 @@ paths from the machine that ran the tests, and those are gone once the job ends.
 A test package that wants its data compared must emit it as an annotation, not
 as an attachment.
 
+The QIT Manager computes the comparison, and human output ends with a link to
+its report page. Against a Manager that predates that, the comparison is
+computed here instead, with the same result and no link.
+
 When the two runs differ in more than one dimension (WordPress, PHP, package
 version, and so on), the comparison is still printed but flagged, because a
 difference in results cannot be attributed to any single one of them.
@@ -105,14 +109,7 @@ HELP
 		}
 
 		try {
-			$test_runs = $this->fetch_runs( $run_a, $run_b );
-
-			$snapshot_a = RunSnapshot::from_manager_run( $run_a, $this->pick_run( $test_runs, $run_a ) );
-			$snapshot_b = RunSnapshot::from_manager_run( $run_b, $this->pick_run( $test_runs, $run_b ) );
-
-			$this->assert_same_test_type( $snapshot_a, $snapshot_b );
-
-			$comparison = new RunComparison( $snapshot_a, $snapshot_b );
+			$comparison = $this->fetch_comparison( $run_a, $run_b ) ?? $this->compare_locally( $run_a, $run_b );
 		} catch ( \RuntimeException $e ) {
 			$this->render_error( $e->getMessage(), $output );
 
@@ -120,9 +117,9 @@ HELP
 		}
 
 		if ( $format === 'json' ) {
-			$output->writeln( (string) json_encode( $comparison->to_array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			$output->writeln( (string) json_encode( $comparison, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		} else {
-			$this->render_human( $comparison->to_array(), $output, $this->get_limit( $input ) );
+			$this->render_human( $comparison, $output, $this->get_limit( $input ) );
 		}
 
 		/*
@@ -133,11 +130,82 @@ HELP
 		 * failure - an unfetchable run, two different test types - still exits 2 above,
 		 * so a mistyped ID can never pass silently.
 		 */
-		if ( $input->getOption( 'exit-code' ) && $comparison->has_regressions() ) {
+		if ( $input->getOption( 'exit-code' ) && ! empty( $comparison['has_regressions'] ) ) {
 			return Command::FAILURE;
 		}
 
 		return Command::SUCCESS;
+	}
+
+	/**
+	 * Ask the Manager for the comparison. Null when the Manager predates the endpoint,
+	 * so the caller can compare locally instead.
+	 *
+	 * @return array<string,mixed>|null
+	 *
+	 * @throws \RuntimeException If the Manager could not compare the runs.
+	 */
+	private function fetch_comparison( string $run_a, string $run_b ): ?array {
+		try {
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/compare' ) )
+				->with_method( 'POST' )
+				->with_post_body( [
+					'a' => $run_a,
+					'b' => $run_b,
+				] )
+				// Read the body of the expected failures instead of throwing, to tell them apart.
+				->with_expected_status_codes( [ 200, 400, 401, 404, 422 ] )
+				->with_retry( 0 )
+				->request();
+		} catch ( \Exception $e ) {
+			throw new \RuntimeException( sprintf(
+				'Could not compare test runs %s and %s: %s',
+				$run_a,
+				$run_b,
+				$this->unwrap_manager_message( $e->getMessage() )
+			), 0, $e );
+		}
+
+		$response = json_decode( $json, true );
+
+		if ( is_array( $response ) && isset( $response['schema'] ) ) {
+			return $response;
+		}
+
+		if ( is_array( $response ) && ( $response['code'] ?? '' ) === 'rest_no_route' ) {
+			return null;
+		}
+
+		$message = is_array( $response ) && isset( $response['message'] ) && is_string( $response['message'] )
+			? $response['message']
+			: 'The Manager returned an unexpected response.';
+
+		throw new \RuntimeException( sprintf(
+			"Could not compare test runs %s and %s: %s\nCheck that both IDs are correct and belong to this account. Run \"qit list-tests\" to see your recent test runs.",
+			$run_a,
+			$run_b,
+			$message
+		) );
+	}
+
+	/**
+	 * The comparison as older Managers need it: fetched runs, compared here.
+	 *
+	 * @return array<string,mixed>
+	 *
+	 * @throws \RuntimeException If the runs could not be fetched or compared.
+	 */
+	private function compare_locally( string $run_a, string $run_b ): array {
+		$test_runs = $this->fetch_runs( $run_a, $run_b );
+
+		$snapshot_a = RunSnapshot::from_manager_run( $run_a, $this->pick_run( $test_runs, $run_a ) );
+		$snapshot_b = RunSnapshot::from_manager_run( $run_b, $this->pick_run( $test_runs, $run_b ) );
+
+		$this->assert_same_test_type( $snapshot_a, $snapshot_b );
+
+		$comparison = new RunComparison( $snapshot_a, $snapshot_b );
+
+		return array_merge( $comparison->to_array(), [ 'has_regressions' => $comparison->has_regressions() ] );
 	}
 
 	/**
@@ -296,6 +364,18 @@ HELP
 	 * @param array<string,mixed> $comparison
 	 */
 	private function render_human( array $comparison, OutputInterface $output, int $limit ): void {
+		$this->render_comparison( $comparison, $output, $limit );
+
+		if ( ! empty( $comparison['report_url'] ) && is_string( $comparison['report_url'] ) ) {
+			$output->writeln( '' );
+			$output->writeln( sprintf( 'Report: <href=%1$s>%1$s</>', OutputFormatter::escape( $comparison['report_url'] ) ) );
+		}
+	}
+
+	/**
+	 * @param array<string,mixed> $comparison
+	 */
+	private function render_comparison( array $comparison, OutputInterface $output, int $limit ): void {
 		$a = $comparison['runs']['a'];
 		$b = $comparison['runs']['b'];
 

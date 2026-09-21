@@ -23,6 +23,12 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->application_tester = $this->make_application_tester();
+
+		// A Manager without the compare endpoint, so these tests cover the local comparison.
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/compare' ),
+			(string) json_encode( [ 'code' => 'rest_no_route', 'message' => 'No route was found matching the URL and request method.' ] )
+		);
 	}
 
 	/**
