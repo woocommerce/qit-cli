@@ -2,9 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Compare\CanaryComparison;
-use QIT_CLI\Compare\RunComparison;
-use QIT_CLI\Compare\RunSnapshot;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
@@ -22,6 +19,36 @@ class CompareCommand extends QITCommand {
 	 * How many entries each section prints before it is truncated, unless --limit says otherwise.
 	 */
 	private const DEFAULT_LIMIT = 25;
+
+	/**
+	 * The comparison document version this CLI can render.
+	 */
+	private const SCHEMA = 1;
+
+	/**
+	 * Context rows, in display order, for schema 1.
+	 */
+	private const CONTEXT_LABELS = [
+		'test_type'           => 'Test type',
+		'wordpress_version'   => 'WordPress',
+		'woocommerce_version' => 'WooCommerce',
+		'php_version'         => 'PHP',
+		'mysql_version'       => 'MySQL',
+		'extension_set'       => 'Extension set',
+		'sut'                 => 'Extension',
+		'sut_version'         => 'Extension version',
+		'test_packages'       => 'Test packages',
+		'canary_profile'      => 'Canary profile',
+	];
+
+	private const SUMMARY_KEYS = [ 'tests', 'passed', 'failed', 'skipped', 'pending', 'other' ];
+
+	/**
+	 * Top-level sections every schema 1 document carries.
+	 */
+	private const DOCUMENT_KEYS = [ 'runs', 'guard', 'summary', 'tests', 'annotations', 'totals' ];
+
+	private const PROBE_COMPLETE = 'complete';
 
 	protected function configure(): void {
 		parent::configure();
@@ -54,7 +81,7 @@ each probe says how far it got: a finding missing from a probe that stopped
 early was never looked for, so it is reported as such instead of as resolved.
 
 Both runs must be of the same test type, and must report results in CTRF format,
-which covers the activation, compatibility, woo-api and woo-e2e test types. Two
+which covers the activation, compatibility, e2e, woo-api and woo-e2e test types. Two
 different test types are two different populations of tests, so comparing them is
 refused rather than reported as everything being added and removed at once.
 
@@ -65,14 +92,20 @@ paths from the machine that ran the tests, and those are gone once the job ends.
 A test package that wants its data compared must emit it as an annotation, not
 as an attachment.
 
+Run A is the baseline and run B the candidate. The QIT Manager computes the
+comparison; this command renders it with the same sections as the comparison's
+report page, and human output ends with a link to that page.
+
 When the two runs differ in more than one dimension (WordPress, PHP, package
 version, and so on), the comparison is still printed but flagged, because a
-difference in results cannot be attributed to any single one of them.
+difference in results cannot be attributed to any single one of them, and it
+ends without a verdict.
 
 Reporting a difference is not a failure: a comparison that ran exits 0 whatever it
 found, so dropping this into a pipeline does not turn the step red. Pass
 --exit-code to gate on the result, as you would with "git diff --exit-code", and
-it exits 1 when run B introduced failures.
+it exits 1 when run B introduced failures. That holds for runs that are not
+comparable too, so a mismatched pair cannot pass a gate unnoticed.
 
 Exit status codes: 0 (the comparison ran), 1 (only with --exit-code: run B
 introduced failures), 2 (the runs could not be fetched or compared).
@@ -105,14 +138,7 @@ HELP
 		}
 
 		try {
-			$test_runs = $this->fetch_runs( $run_a, $run_b );
-
-			$snapshot_a = RunSnapshot::from_manager_run( $run_a, $this->pick_run( $test_runs, $run_a ) );
-			$snapshot_b = RunSnapshot::from_manager_run( $run_b, $this->pick_run( $test_runs, $run_b ) );
-
-			$this->assert_same_test_type( $snapshot_a, $snapshot_b );
-
-			$comparison = new RunComparison( $snapshot_a, $snapshot_b );
+			$comparison = $this->fetch_comparison( $run_a, $run_b );
 		} catch ( \RuntimeException $e ) {
 			$this->render_error( $e->getMessage(), $output );
 
@@ -120,9 +146,9 @@ HELP
 		}
 
 		if ( $format === 'json' ) {
-			$output->writeln( (string) json_encode( $comparison->to_array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			$output->writeln( (string) json_encode( $comparison, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		} else {
-			$this->render_human( $comparison->to_array(), $output, $this->get_limit( $input ) );
+			$this->render_human( $comparison, $output, $this->get_limit( $input ) );
 		}
 
 		/*
@@ -133,7 +159,7 @@ HELP
 		 * failure - an unfetchable run, two different test types - still exits 2 above,
 		 * so a mistyped ID can never pass silently.
 		 */
-		if ( $input->getOption( 'exit-code' ) && $comparison->has_regressions() ) {
+		if ( $input->getOption( 'exit-code' ) && ! empty( $comparison['has_regressions'] ) ) {
 			return Command::FAILURE;
 		}
 
@@ -141,89 +167,75 @@ HELP
 	}
 
 	/**
-	 * Fetch both runs in a single request, so the two sides of the comparison always
-	 * come from the same read of the Manager.
+	 * The Manager computes the comparison; this command only renders it.
 	 *
-	 * @return array<int|string,mixed>
+	 * @return array<string,mixed>
 	 *
-	 * @throws \RuntimeException If the runs could not be fetched.
+	 * @throws \RuntimeException If the Manager could not compare the runs.
 	 */
-	private function fetch_runs( string $run_a, string $run_b ): array {
+	private function fetch_comparison( string $run_a, string $run_b ): array {
 		try {
-			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-multiple' ) )
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/compare' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
-					'test_run_ids' => $run_a . ',' . $run_b,
+					'a' => $run_a,
+					'b' => $run_b,
 				] )
-
-				/*
-				 * The Manager answers an unknown test run ID with a 500, which a retry can
-				 * only reproduce. A mistyped ID is the likeliest way this call fails, and
-				 * retrying it buys the user three alarming lines and up to fifteen seconds
-				 * of sleeping before the same error. A compare reads nothing and changes
-				 * nothing, so it is cheap to run again if the Manager really was blipping.
-				 */
+				// Read the body of the expected failures instead of throwing, to tell them apart.
+				->with_expected_status_codes( [ 200, 400, 401, 404, 422 ] )
 				->with_retry( 0 )
 				->request();
 		} catch ( \Exception $e ) {
 			throw new \RuntimeException( sprintf(
-				"Could not fetch test runs %s and %s: %s\nCheck that both IDs are correct and belong to this account. Run \"qit list-tests\" to see your recent test runs.",
+				'Could not compare test runs %s and %s: %s',
 				$run_a,
 				$run_b,
 				$this->unwrap_manager_message( $e->getMessage() )
 			), 0, $e );
 		}
 
-		$test_runs = json_decode( $json, true );
+		$response = json_decode( $json, true );
 
-		if ( ! is_array( $test_runs ) ) {
-			throw new \RuntimeException( 'The Manager returned an unexpected response for these test runs.' );
+		if ( is_array( $response ) && ( $response['code'] ?? '' ) === 'rest_no_route' ) {
+			throw new \RuntimeException( 'This QIT Manager cannot compare test runs yet.' );
 		}
 
-		return $test_runs;
-	}
+		if ( is_array( $response ) && isset( $response['schema'] ) ) {
+			if ( (int) $response['schema'] !== self::SCHEMA ) {
+				throw new \RuntimeException( sprintf(
+					"This comparison is in format version %d, which this version of the QIT CLI cannot read.\nUpdate the QIT CLI and try again.",
+					(int) $response['schema']
+				) );
+			}
 
-	/**
-	 * Refuse to compare runs of different test types.
-	 *
-	 * Two test types are two different populations of tests, so the diff degenerates
-	 * to "every test was removed, every other test was added" - and, because a new
-	 * failing test counts as a failure introduced by run B, it would report a
-	 * regression that says nothing about either run.
-	 *
-	 * The check is strict string equality on the run record's test_type, deliberately.
-	 *
-	 * One consequence is worth knowing. This CLI has changed which test_type it submits
-	 * for run:woo-e2e more than once (99db9c61, b25740f6, b8e41ff2), and today the two
-	 * paths of that command still disagree: --extension-set submits "woo-e2e", while
-	 * without one it falls through to RunE2ECommand and submits "e2e". So run records
-	 * for the Woo E2E suite carry both spellings, and two such runs are refused here
-	 * even though b8e41ff2 settled on "woo-e2e is a flavour of e2e".
-	 *
-	 * Strict equality is kept anyway: this command exists to compare two runs of the
-	 * same type, and the error message names both types, so the case reads as what it
-	 * is rather than as a silent wrong answer.
-	 *
-	 * @throws \RuntimeException If the two runs are of different test types.
-	 */
-	private function assert_same_test_type( RunSnapshot $a, RunSnapshot $b ): void {
-		if ( $a->context['test_type'] === $b->context['test_type'] ) {
-			return;
+			foreach ( self::DOCUMENT_KEYS as $key ) {
+				if ( ! isset( $response[ $key ] ) || ! is_array( $response[ $key ] ) ) {
+					throw new \RuntimeException( 'The Manager returned an unexpected response.' );
+				}
+			}
+
+			return $response;
+		}
+
+		if ( is_array( $response ) && isset( $response['message'] ) && is_string( $response['message'] ) ) {
+			$message = $response['message'];
+		} elseif ( trim( $json ) !== '' && ! is_array( $response ) ) {
+			$message = $this->unwrap_manager_message( $json );
+		} else {
+			$message = 'The Manager returned an unexpected response.';
+		}
+
+		// A WP_Error body carries a code: authentication, not the run IDs, went wrong.
+		if ( is_array( $response ) && isset( $response['code'] ) ) {
+			throw new \RuntimeException( $message );
 		}
 
 		throw new \RuntimeException( sprintf(
-			'Cannot compare a "%s" run against a "%s" run. Only two runs of the same test type share a population of tests. Test run %s is "%s" and test run %s is "%s".',
-			$this->describe_test_type( $a ),
-			$this->describe_test_type( $b ),
-			$a->id,
-			$this->describe_test_type( $a ),
-			$b->id,
-			$this->describe_test_type( $b )
+			"Could not compare test runs %s and %s: %s\nCheck that both IDs are correct and belong to this account. Run \"qit list-tests\" to see your recent test runs.",
+			$run_a,
+			$run_b,
+			$message
 		) );
-	}
-
-	private function describe_test_type( RunSnapshot $run ): string {
-		return $run->context['test_type'] !== '' ? $run->context['test_type'] : 'unknown';
 	}
 
 	/**
@@ -232,8 +244,8 @@ HELP
 	 * quoting bug when pasted into a sentence. Unwrap that, and pass anything else
 	 * through untouched.
 	 *
-	 * The {"message": "..."} shape needs no handling here: RequestBuilder already
-	 * unwraps it before it throws, so it cannot reach this method.
+	 * The {"message": "..."} shape needs no handling here: it is read before this
+	 * method is reached.
 	 */
 	private function unwrap_manager_message( string $message ): string {
 		$message = trim( $message );
@@ -244,29 +256,6 @@ HELP
 		}
 
 		return $message;
-	}
-
-	/**
-	 * @param array<int|string,mixed> $test_runs
-	 *
-	 * @return array<string,mixed>
-	 *
-	 * @throws \RuntimeException If the run is not in the response.
-	 */
-	private function pick_run( array $test_runs, string $run_id ): array {
-		if ( isset( $test_runs[ $run_id ] ) && is_array( $test_runs[ $run_id ] ) ) {
-			return $test_runs[ $run_id ];
-		}
-
-		// The Manager keys the response by test run ID, but fall back to a scan rather
-		// than failing over a key that came back as an int, a string or padded.
-		foreach ( $test_runs as $test_run ) {
-			if ( is_array( $test_run ) && isset( $test_run['test_run_id'] ) && (string) $test_run['test_run_id'] === $run_id ) {
-				return $test_run;
-			}
-		}
-
-		throw new \RuntimeException( sprintf( 'Test run %s was not found.', $run_id ) );
 	}
 
 	/**
@@ -296,11 +285,23 @@ HELP
 	 * @param array<string,mixed> $comparison
 	 */
 	private function render_human( array $comparison, OutputInterface $output, int $limit ): void {
+		$this->render_comparison( $comparison, $output, $limit );
+
+		if ( ! empty( $comparison['report_url'] ) && is_string( $comparison['report_url'] ) ) {
+			$output->writeln( '' );
+			$output->writeln( sprintf( 'Report: <href=%1$s>%1$s</>', OutputFormatter::escape( $comparison['report_url'] ) ) );
+		}
+	}
+
+	/**
+	 * @param array<string,mixed> $comparison
+	 */
+	private function render_comparison( array $comparison, OutputInterface $output, int $limit ): void {
 		$a = $comparison['runs']['a'];
 		$b = $comparison['runs']['b'];
 
 		$output->writeln( sprintf(
-			'<info>Comparing test run %s (A) against %s (B)</info>',
+			'<info>Comparing baseline %s (A) against candidate %s (B)</info>',
 			OutputFormatter::escape( $a['id'] ),
 			OutputFormatter::escape( $b['id'] )
 		) );
@@ -309,24 +310,22 @@ HELP
 		$this->render_context( $comparison, $output );
 		$this->render_summary( $comparison['summary'], $output );
 
-		$this->render_transitions( 'Introduced failures', $comparison['tests']['introduced'], 'fg=red', $output, $limit );
-		$this->render_transitions( 'Resolved failures', $comparison['tests']['resolved'], 'fg=green', $output, $limit );
-		$this->render_transitions( 'Still failing', $comparison['tests']['still_failing'], 'fg=yellow', $output, $limit );
-		$this->render_transitions( 'Other status changes', $comparison['tests']['status_changed'], 'fg=default', $output, $limit );
-
-		$this->render_tests( 'Added tests (only in B)', $comparison['tests']['added'], $output, $limit );
-		$this->render_tests( 'Removed tests (only in A)', $comparison['tests']['removed'], $output, $limit );
-
-		$this->render_annotations( $comparison['annotations'], $output, $limit );
-
 		if ( isset( $comparison['canary'] ) ) {
 			$this->render_canary( $comparison['canary'], $output, $limit );
 		}
+
+		$this->render_tests( $comparison, $output, $limit );
 
 		$output->writeln( sprintf(
 			'<info>%d test(s) unchanged.</info>',
 			$comparison['tests']['unchanged_count']
 		) );
+
+		if ( empty( $comparison['guard']['comparable'] ) ) {
+			$output->writeln( '<comment>Not comparable: the runs differ in more than the version under test, so these counts are not a verdict.</comment>' );
+
+			return;
+		}
 
 		/*
 		 * The same number the exit code gates on, so the summary cannot contradict
@@ -338,24 +337,22 @@ HELP
 		$regressions = $comparison['totals']['regressions'];
 
 		if ( $regressions === 0 ) {
-			$output->writeln( '<info>No failures introduced by run B.</info>' );
+			$output->writeln( '<info>No failures introduced by the candidate.</info>' );
 
 			return;
 		}
 
-		// The two are counted separately because they are different things. A probe
-		// fails when it records anything, so its findings are the finer statement and
-		// the ones the buckets above name; a failure left over is one no finding
-		// accounts for, which usually means the harness rather than the product.
+		// A failure left over once findings are counted is one no finding accounts
+		// for, which usually means the harness rather than the product.
 		$findings = isset( $comparison['canary'] ) ? $comparison['canary']['totals']['introduced'] : 0;
 		$failures = $regressions - $findings;
 
 		if ( $findings > 0 && $failures > 0 ) {
-			$output->writeln( sprintf( '<fg=red>Run B introduced %d canary finding(s) and %d unexplained failure(s).</>', $findings, $failures ) );
+			$output->writeln( sprintf( '<fg=red>The candidate introduced %d canary finding(s) and %d unexplained failure(s).</>', $findings, $failures ) );
 		} elseif ( $findings > 0 ) {
-			$output->writeln( sprintf( '<fg=red>Run B introduced %d canary finding(s).</>', $findings ) );
+			$output->writeln( sprintf( '<fg=red>The candidate introduced %d canary finding(s).</>', $findings ) );
 		} else {
-			$output->writeln( sprintf( '<fg=red>Run B introduced %d failure(s).</>', $failures ) );
+			$output->writeln( sprintf( '<fg=red>The candidate introduced %d failure(s).</>', $failures ) );
 		}
 	}
 
@@ -363,15 +360,19 @@ HELP
 	 * @param array<string,mixed> $comparison
 	 */
 	private function render_context( array $comparison, OutputInterface $output ): void {
-		$a_context = $comparison['runs']['a']['context'];
-		$b_context = $comparison['runs']['b']['context'];
+		$a_context = (array) $comparison['runs']['a']['context'];
+		$b_context = (array) $comparison['runs']['b']['context'];
 		$differing = array_column( $comparison['guard']['differences'], 'field' );
 
-		$rows = [];
+		$rows   = [];
+		$labels = array_column( $comparison['guard']['differences'], 'label', 'field' ) + self::CONTEXT_LABELS;
+		// Known fields in order, then any the Manager added since, so a differing field is never hidden.
+		$fields = array_unique( array_merge( array_keys( self::CONTEXT_LABELS ), array_keys( array_merge( $a_context, $b_context ) ) ) );
 
-		foreach ( RunSnapshot::CONTEXT_LABELS as $field => $label ) {
-			$a_value = $a_context[ $field ] ?? '';
-			$b_value = $b_context[ $field ] ?? '';
+		foreach ( $fields as $field ) {
+			$label   = (string) ( $labels[ $field ] ?? $field );
+			$a_value = (string) ( $a_context[ $field ] ?? '' );
+			$b_value = (string) ( $b_context[ $field ] ?? '' );
 
 			if ( $a_value === '' && $b_value === '' ) {
 				continue;
@@ -388,19 +389,13 @@ HELP
 		if ( ! empty( $rows ) ) {
 			$table = new Table( $output );
 			$table->setStyle( 'compact' )
-				->setHeaders( [ 'Context', 'A', 'B', '' ] )
+				->setHeaders( [ 'Environment', 'Baseline', 'Candidate', '' ] )
 				->setRows( $rows );
 			$table->render();
 			$output->writeln( '' );
 		}
 
-		foreach ( $comparison['guard']['warnings'] as $warning ) {
-			$output->writeln( sprintf( '<comment>Warning: %s</comment>', OutputFormatter::escape( $warning ) ) );
-		}
-
-		if ( ! empty( $comparison['guard']['warnings'] ) ) {
-			$output->writeln( '' );
-		}
+		$this->render_warnings( $comparison['guard']['warnings'], $output );
 	}
 
 	/**
@@ -409,7 +404,7 @@ HELP
 	private function render_summary( array $summary, OutputInterface $output ): void {
 		$rows = [];
 
-		foreach ( RunSnapshot::SUMMARY_KEYS as $key ) {
+		foreach ( self::SUMMARY_KEYS as $key ) {
 			$delta  = $summary['delta'][ $key ];
 			$rows[] = [
 				ucfirst( $key ),
@@ -421,95 +416,97 @@ HELP
 
 		$table = new Table( $output );
 		$table->setStyle( 'compact' )
-			->setHeaders( [ 'Summary', 'A', 'B', 'Delta' ] )
+			->setHeaders( [ 'Results', 'Baseline', 'Candidate', 'Delta' ] )
 			->setRows( $rows );
 		$table->render();
 		$output->writeln( '' );
 	}
 
 	/**
-	 * @param string                         $heading
-	 * @param array<int,array<string,mixed>> $tests
-	 * @param string                         $style
-	 * @param OutputInterface                $output
-	 * @param int                            $limit
-	 */
-	private function render_transitions( string $heading, array $tests, string $style, OutputInterface $output, int $limit ): void {
-		$this->render_heading( $heading, count( $tests ), $output );
-
-		foreach ( $this->limited( $tests, $limit ) as $test ) {
-			// A status that did not move (still failing) reads as noise as "failed -> failed".
-			$transition = $test['status']['a'] === $test['status']['b']
-				? $test['status']['b']
-				: $test['status']['a'] . ' -> ' . $test['status']['b'];
-
-			$output->writeln( sprintf(
-				'  <%s>%s</> <fg=gray>(%s)</>',
-				$style,
-				OutputFormatter::escape( $test['key'] ),
-				$transition
-			) );
-		}
-
-		$this->render_truncation( count( $tests ), $limit, $output );
-	}
-
-	/**
-	 * @param string                         $heading
-	 * @param array<int,array<string,mixed>> $tests
-	 * @param OutputInterface                $output
-	 * @param int                            $limit
-	 */
-	private function render_tests( string $heading, array $tests, OutputInterface $output, int $limit ): void {
-		$this->render_heading( $heading, count( $tests ), $output );
-
-		foreach ( $this->limited( $tests, $limit ) as $test ) {
-			$output->writeln( sprintf(
-				'  %s <fg=gray>(%s)</>',
-				OutputFormatter::escape( $test['key'] ),
-				$test['status']
-			) );
-		}
-
-		$this->render_truncation( count( $tests ), $limit, $output );
-	}
-
-	/**
-	 * @param array{added:array<int,array<string,string>>,removed:array<int,array<string,string>>} $annotations
-	 */
-	private function render_annotations( array $annotations, OutputInterface $output, int $limit ): void {
-		$total = count( $annotations['added'] ) + count( $annotations['removed'] );
-
-		$this->render_heading( 'Annotation changes', $total, $output );
-
-		foreach ( $this->limited( $annotations['added'], $limit ) as $annotation ) {
-			$output->writeln( sprintf(
-				'  <fg=green>+</> %s <fg=gray>[%s]</> %s',
-				OutputFormatter::escape( $annotation['test'] ),
-				OutputFormatter::escape( $annotation['type'] ),
-				OutputFormatter::escape( $annotation['description'] )
-			) );
-		}
-
-		foreach ( $this->limited( $annotations['removed'], $limit ) as $annotation ) {
-			$output->writeln( sprintf(
-				'  <fg=red>-</> %s <fg=gray>[%s]</> %s',
-				OutputFormatter::escape( $annotation['test'] ),
-				OutputFormatter::escape( $annotation['type'] ),
-				OutputFormatter::escape( $annotation['description'] )
-			) );
-		}
-
-		if ( $total > 0 ) {
-			$output->writeln( '' );
-		}
-	}
-
-	/**
-	 * Print the ecosystem canary section, which reports observations rather than
-	 * assertions and so is bucketed on its own terms.
+	 * Same sections, order and names as the report page's Tests section. A test
+	 * added in a failing state is newly failing, as it is in the regression count.
 	 *
-	 * "Moved" and "unverified" are the two buckets that only exist here, and both
+	 * @param array<string,mixed> $comparison
+	 */
+	private function render_tests( array $comparison, OutputInterface $output, int $limit ): void {
+		$tests         = $comparison['tests'];
+		$added_failing = [];
+		$added_other   = [];
+
+		foreach ( $tests['added'] as $test ) {
+			if ( $test['status'] === 'failed' ) {
+				$added_failing[] = $this->describe_test( $test['key'], 'only in the candidate, ' . $test['status'], 'fg=red' );
+			} else {
+				$added_other[] = $this->describe_test( $test['key'], $test['status'] );
+			}
+		}
+
+		$transitions = function ( array $tests, string $style = '' ): array {
+			return array_map( function ( array $test ) use ( $style ): string {
+				// A status that did not move (still failing) reads as noise as "failed -> failed".
+				$transition = $test['status']['a'] === $test['status']['b']
+					? $test['status']['b']
+					: $test['status']['a'] . ' -> ' . $test['status']['b'];
+
+				return $this->describe_test( $test['key'], $transition, $style );
+			}, $tests );
+		};
+
+		$annotations = [];
+
+		foreach ( [
+			'added'   => '<fg=green>+</>',
+			'removed' => '<fg=red>-</>',
+		] as $key => $sign ) {
+			foreach ( $comparison['annotations'][ $key ] as $annotation ) {
+				$annotations[] = sprintf(
+					'  %s %s <fg=gray>[%s]</> %s',
+					$sign,
+					OutputFormatter::escape( $annotation['test'] ),
+					OutputFormatter::escape( $annotation['type'] ),
+					OutputFormatter::escape( $annotation['description'] )
+				);
+			}
+		}
+
+		$output->writeln( '<options=bold>Tests</>' );
+		$output->writeln( '' );
+
+		$empty_sections = [];
+
+		$this->render_section( 'Newly failing', array_merge( $transitions( $tests['introduced'], 'fg=red' ), $added_failing ), $output, $limit, $empty_sections );
+		$this->render_section( 'Added', $added_other, $output, $limit, $empty_sections );
+		$this->render_section( 'Still failing', $transitions( $tests['still_failing'], 'fg=yellow' ), $output, $limit, $empty_sections );
+		$this->render_section( 'Resolved', $transitions( $tests['resolved'], 'fg=green' ), $output, $limit, $empty_sections );
+		$this->render_section( 'Other status changes', $transitions( $tests['status_changed'] ), $output, $limit, $empty_sections );
+		$this->render_section(
+			'Removed',
+			array_map( function ( array $test ): string {
+				return $this->describe_test( $test['key'], $test['status'] );
+			}, $tests['removed'] ),
+			$output,
+			$limit,
+			$empty_sections
+		);
+		$this->render_section( 'Annotation changes', $annotations, $output, $limit, $empty_sections );
+
+		$this->render_empty( $empty_sections, $output );
+	}
+
+	private function describe_test( string $key, string $detail, string $style = '' ): string {
+		$name = OutputFormatter::escape( $key );
+
+		return sprintf(
+			'  %s <fg=gray>(%s)</>',
+			$style === '' ? $name : sprintf( '<%s>%s</>', $style, $name ),
+			OutputFormatter::escape( $detail )
+		);
+	}
+
+	/**
+	 * Same buckets, order and names as the report page's canary section.
+	 *
+	 * "Moved" and "not looked for" are the two buckets that only exist here, and both
 	 * are there to avoid claiming something the runs do not show: a finding that
 	 * changed probes is neither a regression nor a fix, and a finding missing from
 	 * a probe that stopped early was never looked for.
@@ -517,59 +514,67 @@ HELP
 	 * @param array<string,mixed> $canary
 	 */
 	private function render_canary( array $canary, OutputInterface $output, int $limit ): void {
-		$output->writeln( '<options=bold>Ecosystem canary findings</>' );
+		$output->writeln( '<options=bold>Ecosystem canary findings (advisory)</>' );
 		$output->writeln( '' );
 
-		$this->render_findings( 'Introduced', $canary['findings']['introduced'], 'fg=red', $output, $limit );
-		$this->render_findings( 'Resolved', $canary['findings']['resolved'], 'fg=green', $output, $limit );
-		$this->render_moved_findings( $canary['findings']['moved'], $output, $limit );
-		$this->render_findings( 'Not looked for in run B', $canary['findings']['unverified'], 'fg=yellow', $output, $limit );
-		$this->render_findings( 'Pre-existing', $canary['findings']['pre_existing'], 'fg=gray', $output, $limit );
+		$this->render_warnings( $canary['warnings'], $output );
 
-		$this->render_probe_states( $canary['probes']['changed'], $output, $limit );
+		$moved = array_map( function ( array $finding ): string {
+			return sprintf(
+				"    %s\n      <fg=gray>%s -> %s</>",
+				OutputFormatter::escape( (string) $finding['signature'] ),
+				OutputFormatter::escape( implode( ', ', array_column( $finding['from'], 'probe' ) ) ),
+				OutputFormatter::escape( implode( ', ', array_column( $finding['to'], 'probe' ) ) )
+			);
+		}, $canary['findings']['moved'] );
+
+		$probe_states = array_map( function ( array $probe ): string {
+			return sprintf(
+				'    %s <fg=gray>(%s -> %s)</>',
+				OutputFormatter::escape( $probe['probe'] ),
+				OutputFormatter::escape( (string) $probe['a'] ),
+				OutputFormatter::escape( (string) $probe['b'] )
+			);
+		}, $canary['probes']['changed'] );
+
+		$empty_sections = [];
+
+		$this->render_section( '  Introduced', $this->describe_findings( $canary['findings']['introduced'], 'fg=red' ), $output, $limit, $empty_sections );
+		$this->render_section( '  Moved between probes', $moved, $output, $limit, $empty_sections );
+		$this->render_section( '  Not looked for on the candidate', $this->describe_findings( $canary['findings']['unverified'], 'fg=yellow' ), $output, $limit, $empty_sections );
+		$this->render_section( '  Resolved', $this->describe_findings( $canary['findings']['resolved'], 'fg=green' ), $output, $limit, $empty_sections );
+		$this->render_section( '  Pre-existing', $this->describe_findings( $canary['findings']['pre_existing'], 'fg=gray' ), $output, $limit, $empty_sections );
+		$this->render_section( '  Probe state changes', $probe_states, $output, $limit, $empty_sections );
+
+		$this->render_empty( $empty_sections, $output );
 
 		/*
-		 * The sections above this one are about findings; the test buckets near the
-		 * top of the report are about probe results, which are a different thing. A
-		 * probe fails when it records anything, so a finding that only moved probes
-		 * shows up there as one probe passing and another failing. Both readings are
-		 * true, and a reader who has just been told the finding moved needs to know
-		 * why the other section disagrees.
+		 * The test sections below are about probe results, which are a different
+		 * thing from findings. A probe fails when it records anything, so a finding
+		 * that only moved probes shows up there as one probe passing and another
+		 * failing, and a reader who has just been told the finding moved needs to
+		 * know why the other section disagrees.
 		 */
 		if ( count( $canary['findings']['moved'] ) > 0 ) {
-			$output->writeln( '<comment>A probe fails when it records anything, so a finding that moved probes also shows above as one probe resolved and another introduced. Neither is a change in what the build does.</comment>' );
-			$output->writeln( '' );
-		}
-
-		foreach ( $canary['warnings'] as $warning ) {
-			$output->writeln( sprintf( '<comment>Warning: %s</comment>', OutputFormatter::escape( $warning ) ) );
-		}
-
-		if ( ! empty( $canary['warnings'] ) ) {
+			$output->writeln( '<comment>A probe fails when it records anything, so a finding that moved probes also shows below as one probe resolved and another newly failing. Neither is a change in what the build does.</comment>' );
 			$output->writeln( '' );
 		}
 	}
 
 	/**
-	 * @param string                         $heading
 	 * @param array<int,array<string,mixed>> $findings
-	 * @param string                         $style
-	 * @param OutputInterface                $output
-	 * @param int                            $limit
+	 *
+	 * @return string[]
 	 */
-	private function render_findings( string $heading, array $findings, string $style, OutputInterface $output, int $limit ): void {
-		$this->render_heading( '  ' . $heading, count( $findings ), $output );
-
-		foreach ( $this->limited( $findings, $limit ) as $finding ) {
-			$output->writeln( sprintf(
+	private function describe_findings( array $findings, string $style ): array {
+		return array_map( function ( array $finding ) use ( $style ): string {
+			return sprintf(
 				'    <%s>%s</> <fg=gray>(%s)</>',
 				$style,
 				OutputFormatter::escape( (string) $finding['key'] ),
 				OutputFormatter::escape( $this->describe_finding_context( $finding ) )
-			) );
-		}
-
-		$this->render_truncation( count( $findings ), $limit, $output );
+			);
+		}, $findings );
 	}
 
 	/**
@@ -582,68 +587,76 @@ HELP
 			$parts[] = 'fixtures: ' . implode( ' + ', $finding['fixtures'] );
 		}
 
-		if ( isset( $finding['probe_state'] ) && $finding['probe_state'] !== CanaryComparison::STATE_COMPLETE ) {
-			$parts[] = 'run B probe: ' . $finding['probe_state'];
+		if ( isset( $finding['probe_state'] ) && $finding['probe_state'] !== self::PROBE_COMPLETE ) {
+			$parts[] = 'candidate probe: ' . $finding['probe_state'];
 		}
 
-		if ( isset( $finding['baseline_probe_state'] ) && $finding['baseline_probe_state'] !== CanaryComparison::STATE_COMPLETE ) {
-			$parts[] = 'run A probe: ' . $finding['baseline_probe_state'];
+		if ( isset( $finding['baseline_probe_state'] ) && $finding['baseline_probe_state'] !== self::PROBE_COMPLETE ) {
+			$parts[] = 'baseline probe: ' . $finding['baseline_probe_state'];
 		}
 
 		return implode( ', ', $parts );
 	}
 
 	/**
-	 * @param array<int,array<string,mixed>> $moved
+	 * Prints a section, or adds its heading to $empty_sections so the group ends with a
+	 * single "Nothing in:" line, as the report page does.
+	 *
+	 * @param string          $heading
+	 * @param string[]        $entries Formatted entries; one may span several lines.
+	 * @param OutputInterface $output
+	 * @param int             $limit
+	 * @param string[]        $empty_sections
 	 */
-	private function render_moved_findings( array $moved, OutputInterface $output, int $limit ): void {
-		$this->render_heading( '  Moved between probes', count( $moved ), $output );
+	private function render_section( string $heading, array $entries, OutputInterface $output, int $limit, array &$empty_sections ): void {
+		if ( empty( $entries ) ) {
+			$empty_sections[] = trim( $heading );
 
-		foreach ( $this->limited( $moved, $limit ) as $finding ) {
-			$output->writeln( sprintf(
-				'    %s',
-				OutputFormatter::escape( (string) $finding['signature'] )
-			) );
-			$output->writeln( sprintf(
-				'      <fg=gray>%s -> %s</>',
-				OutputFormatter::escape( implode( ', ', array_column( $finding['from'], 'probe' ) ) ),
-				OutputFormatter::escape( implode( ', ', array_column( $finding['to'], 'probe' ) ) )
-			) );
+			return;
 		}
 
-		$this->render_truncation( count( $moved ), $limit, $output );
+		$output->writeln( sprintf( '<options=bold>%s (%d)</>', $heading, count( $entries ) ) );
+
+		foreach ( $this->limited( $entries, $limit ) as $entry ) {
+			$output->writeln( $entry );
+		}
+
+		if ( $limit > 0 && count( $entries ) > $limit ) {
+			$output->writeln( sprintf( '  <fg=gray>... and %d more. Use --limit=0 to show all.</>', count( $entries ) - $limit ) );
+		}
+
+		$output->writeln( '' );
 	}
 
 	/**
-	 * @param array<int,array<string,string>> $changed
+	 * @param string[] $titles
 	 */
-	private function render_probe_states( array $changed, OutputInterface $output, int $limit ): void {
-		$this->render_heading( '  Probe state changes', count( $changed ), $output );
-
-		foreach ( $this->limited( $changed, $limit ) as $probe ) {
-			$output->writeln( sprintf(
-				'    %s <fg=gray>(%s -> %s)</>',
-				OutputFormatter::escape( $probe['probe'] ),
-				$probe['a'],
-				$probe['b']
-			) );
+	private function render_empty( array $titles, OutputInterface $output ): void {
+		if ( empty( $titles ) ) {
+			return;
 		}
 
-		$this->render_truncation( count( $changed ), $limit, $output );
+		$output->writeln( sprintf( '<fg=gray>Nothing in: %s.</>', implode( ', ', $titles ) ) );
+		$output->writeln( '' );
 	}
 
-	private function render_heading( string $heading, int $count, OutputInterface $output ): void {
-		$output->writeln( sprintf( '<options=bold>%s (%d)</>', $heading, $count ) );
+	/**
+	 * @param string[] $warnings
+	 */
+	private function render_warnings( array $warnings, OutputInterface $output ): void {
+		foreach ( $warnings as $warning ) {
+			$output->writeln( sprintf( '<comment>Warning: %s</comment>', OutputFormatter::escape( $warning ) ) );
+		}
 
-		if ( $count === 0 ) {
+		if ( ! empty( $warnings ) ) {
 			$output->writeln( '' );
 		}
 	}
 
 	/**
-	 * @param array<int,array<string,mixed>> $entries
+	 * @param string[] $entries
 	 *
-	 * @return array<int,array<string,mixed>>
+	 * @return string[]
 	 */
 	private function limited( array $entries, int $limit ): array {
 		if ( $limit <= 0 ) {
@@ -651,17 +664,5 @@ HELP
 		}
 
 		return array_slice( $entries, 0, $limit );
-	}
-
-	private function render_truncation( int $count, int $limit, OutputInterface $output ): void {
-		if ( $count === 0 ) {
-			return;
-		}
-
-		if ( $limit > 0 && $count > $limit ) {
-			$output->writeln( sprintf( '  <fg=gray>... and %d more. Use --limit=0 to show all.</>', $count - $limit ) );
-		}
-
-		$output->writeln( '' );
 	}
 }

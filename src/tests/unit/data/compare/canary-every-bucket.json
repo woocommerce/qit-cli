@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "runs": {
+    "a": {
+      "id": "1001",
+      "status": "failed",
+      "created_at": "2025-01-15 10:30:00",
+      "result_url": "https://qit.woo.com/results/1001.abc",
+      "context": {
+        "test_type": "e2e",
+        "wordpress_version": "6.7",
+        "woocommerce_version": "11.0.0-rc.1",
+        "php_version": "8.2",
+        "extension_set": "",
+        "sut": "WooCommerce",
+        "sut_version": "1.0.0",
+        "test_packages": "",
+        "canary_profile": ""
+      }
+    },
+    "b": {
+      "id": "1002",
+      "status": "failed",
+      "created_at": "2025-01-15 10:30:00",
+      "result_url": "https://qit.woo.com/results/1002.abc",
+      "context": {
+        "test_type": "e2e",
+        "wordpress_version": "6.7",
+        "woocommerce_version": "11.0.0-rc.1",
+        "php_version": "8.2",
+        "extension_set": "",
+        "sut": "WooCommerce",
+        "sut_version": "1.0.0",
+        "test_packages": "",
+        "canary_profile": ""
+      }
+    }
+  },
+  "guard": {
+    "comparable": true,
+    "differences": [],
+    "warnings": []
+  },
+  "summary": {
+    "a": {
+      "tests": 2,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0
+    },
+    "b": {
+      "tests": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0
+    },
+    "delta": {
+      "tests": 0,
+      "passed": -1,
+      "failed": 1,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0
+    }
+  },
+  "tests": {
+    "introduced": [
+      {
+        "key": "woo-canary.pricing.drift - explores something",
+        "name": "woo-canary.pricing.drift - explores something",
+        "suite": "",
+        "status": {
+          "a": "passed",
+          "b": "failed"
+        },
+        "duration": {
+          "a": 1000,
+          "b": 1000
+        },
+        "message": ""
+      }
+    ],
+    "resolved": [],
+    "still_failing": [
+      {
+        "key": "woo-canary.checkout.custom-fields - explores something",
+        "name": "woo-canary.checkout.custom-fields - explores something",
+        "suite": "",
+        "status": {
+          "a": "failed",
+          "b": "failed"
+        },
+        "duration": {
+          "a": 1000,
+          "b": 1000
+        },
+        "message": ""
+      }
+    ],
+    "status_changed": [],
+    "added": [],
+    "removed": [],
+    "unchanged_count": 0
+  },
+  "annotations": {
+    "added": [],
+    "removed": []
+  },
+  "totals": {
+    "introduced": 1,
+    "resolved": 0,
+    "still_failing": 1,
+    "status_changed": 0,
+    "added": 0,
+    "removed": 0,
+    "unchanged": 0,
+    "annotations": 0,
+    "regressions": 1
+  },
+  "canary": {
+    "findings": {
+      "introduced": [
+        {
+          "key": "workflow-failure:woo-canary.checkout.custom-fields:the Store API refused adding to the cart",
+          "signature": "workflow-failure:the Store API refused adding to the cart",
+          "type": "workflow-failure",
+          "surface": "classic-checkout",
+          "profile": "synthetic",
+          "fixtures": [],
+          "probe": "woo-canary.checkout.custom-fields",
+          "test": "woo-canary.checkout.custom-fields - explores something",
+          "baseline_probe_state": "complete"
+        }
+      ],
+      "resolved": [],
+      "moved": [
+        {
+          "signature": "fatal:Uncaught Error @ class-wc-queue.php",
+          "type": "fatal",
+          "from": [
+            {
+              "key": "fatal:woo-canary.checkout.custom-fields:Uncaught Error @ class-wc-queue.php",
+              "probe": "woo-canary.checkout.custom-fields",
+              "test": "woo-canary.checkout.custom-fields - explores something",
+              "surface": "classic-checkout"
+            }
+          ],
+          "to": [
+            {
+              "key": "fatal:woo-canary.pricing.drift:Uncaught Error @ class-wc-queue.php",
+              "probe": "woo-canary.pricing.drift",
+              "test": "woo-canary.pricing.drift - explores something",
+              "surface": "classic-checkout"
+            }
+          ]
+        }
+      ],
+      "unverified": [
+        {
+          "key": "monetary-drift:woo-canary.checkout.custom-fields:order total",
+          "signature": "monetary-drift:order total",
+          "type": "monetary-drift",
+          "surface": "classic-checkout",
+          "profile": "synthetic",
+          "fixtures": [],
+          "probe": "woo-canary.checkout.custom-fields",
+          "test": "woo-canary.checkout.custom-fields - explores something",
+          "probe_state": "truncated",
+          "reason": "The probe \"woo-canary.checkout.custom-fields\" stopped early in run B, so this was never looked for."
+        }
+      ],
+      "pre_existing": []
+    },
+    "probes": {
+      "a": {
+        "woo-canary.checkout.custom-fields": "complete",
+        "woo-canary.pricing.drift": "complete"
+      },
+      "b": {
+        "woo-canary.checkout.custom-fields": "truncated",
+        "woo-canary.pricing.drift": "complete"
+      },
+      "changed": [
+        {
+          "probe": "woo-canary.checkout.custom-fields",
+          "a": "complete",
+          "b": "truncated"
+        }
+      ]
+    },
+    "warnings": [
+      "1 baseline finding(s) could not be judged: run B did not complete every probe that could have recorded them, so their absence is not a fix. Each one says which probe."
+    ],
+    "totals": {
+      "introduced": 1,
+      "resolved": 0,
+      "moved": 1,
+      "unverified": 1,
+      "pre_existing": 0
+    }
+  },
+  "has_regressions": true
+}
