@@ -81,7 +81,7 @@ each probe says how far it got: a finding missing from a probe that stopped
 early was never looked for, so it is reported as such instead of as resolved.
 
 Both runs must be of the same test type, and must report results in CTRF format,
-which covers the activation, compatibility, woo-api and woo-e2e test types. Two
+which covers the activation, compatibility, e2e, woo-api and woo-e2e test types. Two
 different test types are two different populations of tests, so comparing them is
 refused rather than reported as everything being added and removed at once.
 
