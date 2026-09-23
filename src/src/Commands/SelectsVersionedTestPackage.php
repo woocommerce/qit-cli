@@ -15,8 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Core E2E and Core API suites are ports whose assertions belong to a version,
  * and the activation suite drives WooCommerce\'s admin UI, whose markup
  * changes between versions. One implementation on purpose — the Manager applies
- * the same rule for the runs it creates itself, and a third copy would be one
- * too many.
+ * the same rule for the runs it creates itself, and another copy would be
+ * one too many.
  *
  * A using command declares two things: the key it is published under in sync
  * data, and what to run when nothing covers the version. Which tag covers a
