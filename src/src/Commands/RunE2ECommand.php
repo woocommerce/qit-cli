@@ -366,6 +366,13 @@ class RunE2ECommand extends QITCommand {
 			$env_up_options['--skip-test-phases'] = true;
 		}
 
+		// Tell env:up about the --subpackage selection so it provisions the
+		// selected subpackages' requirements instead of the parent's.
+		if ( ! empty( $requested_subpackages ) ) {
+			$env_up_options['--subpackage']        = $requested_subpackages;
+			$env_up_options['--subpackage-parent'] = $subpackage_parent_dir;
+		}
+
 		// Always output JSON for parsing
 		$env_up_options['--json'] = true;
 

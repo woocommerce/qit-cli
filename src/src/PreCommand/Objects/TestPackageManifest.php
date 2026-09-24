@@ -455,9 +455,9 @@ final class TestPackageManifest {
 	 *
 	 * Subpackages are pure subsets that inherit all configuration from the
 	 * parent except the 'run' phase, which they must override to select which
-	 * tests to execute. Note: subpackage-level 'requires' overrides are merged
-	 * for metadata purposes only — environment provisioning always uses the
-	 * parent manifest's requirements.
+	 * tests to execute. Subpackage-level 'requires' keys replace the parent's
+	 * (shallow merge), and environment provisioning uses these merged
+	 * requirements when the subpackage is selected.
 	 *
 	 * @param string $subpackage_id The subpackage ID to synthesize (full ID, e.g. "namespace/name").
 	 * @return TestPackageManifest The synthesized subpackage manifest.

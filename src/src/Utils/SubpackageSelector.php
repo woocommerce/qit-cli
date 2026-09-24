@@ -3,6 +3,7 @@
 namespace QIT_CLI\Utils;
 
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 
 /**
  * Validates --subpackage selections against the supplied test packages.
@@ -147,6 +148,39 @@ class SubpackageSelector {
 		}
 
 		return $parent_dir;
+	}
+
+	/**
+	 * Get the manifests whose requirements should be provisioned for a test package.
+	 *
+	 * When the package is the local parent of a --subpackage selection, the
+	 * requirements come from the selected subpackages' synthesized manifests
+	 * instead of the parent, matching how remote subpackage references are
+	 * provisioned. Otherwise the package's own manifest is returned.
+	 *
+	 * @param TestPackageManifest $manifest       The test package manifest.
+	 * @param string              $package_ref    The test package reference (local path or remote reference).
+	 * @param array<string>       $subpackage_ids Selected subpackage IDs (empty when there is no selection).
+	 * @param string|null         $parent_dir     Real path of the local parent package the selection applies to.
+	 *
+	 * @return array<string,TestPackageManifest> Map of requirement source label => manifest.
+	 * @throws \InvalidArgumentException If a selected subpackage manifest cannot be synthesized.
+	 */
+	public static function get_requirement_manifests( TestPackageManifest $manifest, string $package_ref, array $subpackage_ids, ?string $parent_dir ): array {
+		if ( empty( $subpackage_ids )
+			|| $parent_dir === null
+			|| ! is_dir( $package_ref )
+			|| realpath( $package_ref ) !== $parent_dir
+		) {
+			return [ $package_ref => $manifest ];
+		}
+
+		$manifests = [];
+		foreach ( $subpackage_ids as $subpackage_id ) {
+			$manifests[ "{$subpackage_id} ({$package_ref})" ] = $manifest->create_subpackage_manifest( $subpackage_id );
+		}
+
+		return $manifests;
 	}
 
 	/**

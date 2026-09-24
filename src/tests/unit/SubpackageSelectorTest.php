@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use PHPUnit\Framework\TestCase;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use QIT_CLI\Utils\SubpackageSelector;
 
 /**
@@ -288,5 +289,106 @@ class SubpackageSelectorTest extends TestCase {
 		$this->expectExceptionMessage( 'Schema validation failed' );
 
 		SubpackageSelector::validate_selection( [ 'woocommerce/checkout' ], [ $dir ] );
+	}
+
+	/**
+	 * @return TestPackageManifest A parent manifest whose subpackages override requirements.
+	 */
+	private function get_parent_manifest_with_requirement_overrides(): TestPackageManifest {
+		$data                             = $this->get_parent_manifest_data();
+		$data['requires']                 = [
+			'plugins' => [ 'woocommerce' ],
+			'secrets' => [ 'PARENT_SECRET' ],
+		];
+		$data['subpackages']['woocommerce/cart']['requires'] = [
+			'plugins' => [ 'woocommerce', 'woocommerce-gateway-stripe' ],
+			'themes'  => [ 'storefront' ],
+			'network' => true,
+			'tunnel'  => true,
+		];
+
+		return new TestPackageManifest( $data );
+	}
+
+	/**
+	 * Test that the package's own manifest is used when there is no selection.
+	 */
+	public function test_requirement_manifests_without_selection_use_package_manifest(): void {
+		$dir      = $this->create_package_dir( $this->get_parent_manifest_data() );
+		$manifest = $this->get_parent_manifest_with_requirement_overrides();
+
+		$this->assertSame(
+			[ $dir => $manifest ],
+			SubpackageSelector::get_requirement_manifests( $manifest, $dir, [], null )
+		);
+	}
+
+	/**
+	 * Test that packages other than the selection's parent use their own manifest.
+	 */
+	public function test_requirement_manifests_for_other_packages_use_package_manifest(): void {
+		$parent_dir = $this->create_package_dir( $this->get_parent_manifest_data() );
+		$other_dir  = $this->create_package_dir( $this->get_parent_manifest_data() );
+		$manifest   = $this->get_parent_manifest_with_requirement_overrides();
+
+		$this->assertSame(
+			[ $other_dir => $manifest ],
+			SubpackageSelector::get_requirement_manifests( $manifest, $other_dir, [ 'woocommerce/cart' ], realpath( $parent_dir ) )
+		);
+		$this->assertSame(
+			[ 'woocommerce/remote:1.0.0' => $manifest ],
+			SubpackageSelector::get_requirement_manifests( $manifest, 'woocommerce/remote:1.0.0', [ 'woocommerce/cart' ], realpath( $parent_dir ) )
+		);
+	}
+
+	/**
+	 * Test that the selected subpackage's requirements replace the parent's,
+	 * matching how remote subpackage references are provisioned.
+	 */
+	public function test_requirement_manifests_use_selected_subpackage_requirements(): void {
+		$dir      = $this->create_package_dir( $this->get_parent_manifest_data() );
+		$manifest = $this->get_parent_manifest_with_requirement_overrides();
+
+		$result = SubpackageSelector::get_requirement_manifests( $manifest, $dir, [ 'woocommerce/cart' ], realpath( $dir ) );
+
+		$this->assertSame( [ "woocommerce/cart ({$dir})" ], array_keys( $result ) );
+
+		$cart = $result[ "woocommerce/cart ({$dir})" ];
+		$this->assertSame( [ 'woocommerce', 'woocommerce-gateway-stripe' ], $cart->get_required_plugins() );
+		$this->assertSame( [ 'storefront' ], $cart->get_required_themes() );
+		$this->assertSame( [ 'PARENT_SECRET' ], $cart->get_requires()['secrets'] );
+		$this->assertTrue( $cart->requires_network() );
+		$this->assertTrue( $cart->requires_tunnel() );
+	}
+
+	/**
+	 * Test that each selected subpackage contributes its own requirements, and
+	 * that a subpackage without overrides inherits the parent's.
+	 */
+	public function test_requirement_manifests_for_multiple_subpackages(): void {
+		$dir      = $this->create_package_dir( $this->get_parent_manifest_data() );
+		$manifest = $this->get_parent_manifest_with_requirement_overrides();
+
+		$result = SubpackageSelector::get_requirement_manifests(
+			$manifest,
+			$dir . '/.',
+			[ 'woocommerce/checkout', 'woocommerce/cart' ],
+			realpath( $dir )
+		);
+
+		$this->assertSame(
+			[ "woocommerce/checkout ({$dir}/.)", "woocommerce/cart ({$dir}/.)" ],
+			array_keys( $result )
+		);
+
+		$checkout = $result[ "woocommerce/checkout ({$dir}/.)" ];
+		$this->assertSame( [ 'woocommerce' ], $checkout->get_required_plugins() );
+		$this->assertSame( [], $checkout->get_required_themes() );
+		$this->assertFalse( $checkout->requires_network() );
+		$this->assertFalse( $checkout->requires_tunnel() );
+
+		$cart = $result[ "woocommerce/cart ({$dir}/.)" ];
+		$this->assertSame( [ 'woocommerce', 'woocommerce-gateway-stripe' ], $cart->get_required_plugins() );
+		$this->assertTrue( $cart->requires_network() );
 	}
 }
