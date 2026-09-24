@@ -210,22 +210,46 @@ class RunE2ECommandTest extends TestCase {
 	}
 
 	/**
-	 * Test running e2e with local test package and custom plugin.
+	 * Provide test cases for {@see test_run_e2e_with_local_package()}.
 	 */
-	public function test_run_e2e_with_local_package_and_custom_plugin(): void {
+	public function provide_test_run_e2e_with_local_package_test_cases(): array {
+		return [
+			'custom plugin' => [
+				'custom_plugin' => true,
+				'subpackage'    => false,
+			],
+			'subpackage specified' => [
+				'custom_plugin' => false,
+				'subpackage'    => true,
+			],
+			'custom plugin and subpackage specified' => [
+				'custom_plugin' => true,
+				'subpackage'    => true,
+			],
+		];
+	}
+
+	/**
+	 * Test running e2e with local test package and custom plugin.
+	 *
+	 * @dataProvider provide_test_run_e2e_with_local_package_test_cases
+	 */
+	public function test_run_e2e_with_local_package( bool $custom_plugin, bool $subpackage ): void {
 		$tempDir = null;
 		$packageDir = null;
 		$pluginDir = null;
-		
+		$subpackageId = null;
+
 		try {
 			$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
 			mkdir( $tempDir, 0755, true );
 			$packageDir = $tempDir . '/test-package';
 			$pluginDir = $tempDir . '/test-plugin';
-			
-			// Create a simple test plugin
-			mkdir( $pluginDir, 0755, true );
-			file_put_contents( $pluginDir . '/test-plugin.php', '<?php
+
+			if ( $custom_plugin ) {
+				// Create a simple test plugin
+				mkdir( $pluginDir, 0755, true );
+				file_put_contents( $pluginDir . '/test-plugin.php', '<?php
 /**
  * Plugin Name: Test Plugin
  * Version: 1.0.0
@@ -235,8 +259,9 @@ add_action( "wp_body_open", function() {
 	echo "<div style=\"display:none\" id=\"test-plugin-marker\">Test plugin is active!</div>";
 } );
 ' );
-			
-			// Scaffold a test package that tests for the plugin
+			}
+
+			// Scaffold a test package
 			qit( [
 				'package:scaffold',
 				$packageDir,
@@ -245,11 +270,12 @@ add_action( "wp_body_open", function() {
 				'--framework=playwright',
 			] );
 			
-			// Modify the test to just check if the site loads with the plugin
-			$testFile = $packageDir . '/tests/example.spec.js';
+			// Modify the test to just check if the site loads
+			$testFileRelativePath = 'tests/example.spec.js';
+			$testFile = $packageDir . '/' . $testFileRelativePath;
 			file_put_contents( $testFile, "import { test, expect } from '@playwright/test';
 
-test('site loads with custom plugin', async ({ page }) => {
+test('site loads', async ({ page }) => {
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
   
@@ -271,14 +297,50 @@ test('site loads with custom plugin', async ({ page }) => {
 			
 			$configPath = $tempDir . '/qit.json';
 			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
-			
-			// Run the test with our custom plugin
-			$proc = qit( [
-				'run:e2e',
-				'woocommerce',
-				'--plugin', realpath( $pluginDir ),
-				'--config', $configPath,
-			], return_process: true );
+
+			if ( $subpackage ) {
+				// Modify the existing manifest to add a subpackage.
+				$manifestPath = $packageDir . '/qit-test.json';
+				$manifest     = json_decode( (string) file_get_contents( $manifestPath ), true );
+
+				// Add output to the parent package's setup phase.
+				$manifest['test']['phases']['setup']   = $manifest['test']['phases']['setup'] ?? [];
+				$manifest['test']['phases']['setup'][] = "echo 'INHERITED_PARENT_SETUP'";
+
+				$parentPackage = $manifest['package'];
+				$subpackageId  = $parentPackage . '-subpackage';
+
+				$manifest['subpackages'] = [
+					$subpackageId => [
+						'description' => 'Subpackage that runs only the example spec',
+						'test' => [
+							'phases' => [
+								// Add custom output to the subpackage's run phase for later verification.
+								'run' => [
+									"echo 'RUNNING_SUBPACKAGE'",
+									"npx playwright test $testFileRelativePath",
+								],
+							],
+						],
+					],
+				];
+
+				file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT ) );
+			}
+
+			// Run the test
+			$qit_args = [ 'run:e2e', 'woocommerce', '--config', $configPath ];
+
+			if ( $custom_plugin ) {
+				$qit_args[] = '--plugin';
+				$qit_args[] = realpath( $pluginDir );
+			}
+			if ( $subpackage ) {
+				$qit_args[] = '--subpackage';
+				$qit_args[] = $subpackageId;
+			}
+
+			$proc = qit( $qit_args, return_process: true );
 			
 			$output = $proc->getOutput();
 			$exitCode = $proc->getExitCode();
@@ -286,7 +348,14 @@ test('site loads with custom plugin', async ({ page }) => {
 			// Verify the test ran
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			$this->assertStringContainsString( 'Running Test Packages', $output );
-			
+
+			if ( $subpackage ) {
+				// Confirm the subpackage 'run' phase output is present.
+				$this->assertStringContainsString( 'RUNNING_SUBPACKAGE', $output );
+				// Confirm the parent package's 'setup' phase output is present.
+				$this->assertStringContainsString( 'INHERITED_PARENT_SETUP', $output );
+			}
+
 			// The test should complete - we're testing the workflow, not the actual plugin functionality
 			// The plugin might not be activated by default in the test environment
 			$this->assertContains( $exitCode, [0, 1], 'Test should complete. Output: ' . $output );

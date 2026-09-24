@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use QIT_CLI\Utils\PackageReferenceUtils;
+use QIT_CLI\Utils\SubpackageSelector;
 use function QIT_CLI\is_windows;
 
 /**
@@ -40,6 +41,10 @@ class UpEnvironmentCommand extends QITCommand {
 	private \QIT_CLI\Environment\EnvironmentVars $environment_vars;
 	/** @var EnvironmentMonitor */
 	private EnvironmentMonitor $environment_monitor;
+	/** @var array<string> Subpackage IDs selected for the local parent package (set by run:e2e --subpackage). */
+	private array $selected_subpackages = [];
+	/** @var string|null Real path of the local parent package the subpackage selection applies to. */
+	private ?string $subpackage_parent_dir = null;
 	/** @var string|null landingPage of the Blueprint in use, if any. */
 	private ?string $blueprint_landing_page = null;
 
@@ -96,6 +101,8 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'skip-setup', null, InputOption::VALUE_NONE, 'Skip running setup phases even if qit-test.json is found' )
 			->addOption( 'setup', null, InputOption::VALUE_OPTIONAL, 'Run setup phases from test package in specified directory', false )
 			->addOption( 'skip-test-phases', null, InputOption::VALUE_NONE, 'Skip all test phases (internal use by run:e2e)' )
+			->addOption( 'subpackage', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Provision requirements for the given subpackage(s) of the local parent package (internal use by run:e2e)', [] )
+			->addOption( 'subpackage-parent', null, InputOption::VALUE_REQUIRED, 'Local parent package directory the --subpackage selection applies to (internal use by run:e2e)' )
 			->addOption( 'global-setup', null, InputOption::VALUE_NONE, 'Run globalSetup and setup phases without executing tests. Environment stays running for development.' )
 			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins during environment setup' )
 			->addOption( 'skip_activating_themes', null, InputOption::VALUE_NONE, 'Skip activating themes during environment setup' )
@@ -128,6 +135,22 @@ class UpEnvironmentCommand extends QITCommand {
 				] ) );
 			} else {
 				$output->writeln( '<error>' . $error_message . '</error>' );
+			}
+			return Command::FAILURE;
+		}
+
+		/* ─ Resolve the subpackage selection, so requirements come from the selected subpackages ─ */
+		try {
+			$this->resolve_subpackage_selection( $input );
+		} catch ( \RuntimeException $e ) {
+			if ( $input->getOption( 'json' ) ) {
+				$output->writeln( json_encode( [
+					'error'   => 'invalid_subpackage',
+					'message' => $e->getMessage(),
+					'env_id'  => null, // EnvironmentRunner expects env_id
+				] ) );
+			} else {
+				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 			}
 			return Command::FAILURE;
 		}
@@ -167,38 +190,7 @@ class UpEnvironmentCommand extends QITCommand {
 					continue;
 				}
 
-				// Skip absolute paths (already absolute)
-				if ( substr( $package, 0, 1 ) === '/' ) {
-					continue;
-				}
-
-				// Check if it's a relative path starting with . (includes ./, ., ../, etc.)
-				if ( substr( $package, 0, 1 ) === '.' ) {
-					// Try realpath first, fall back to manual construction if it fails
-					$resolved = @realpath( $package );
-					if ( $resolved === false ) {
-						// realpath failed (possibly due to permissions or non-existent path)
-						// For simple . and ./, use getcwd
-						if ( $package === '.' || $package === './' ) {
-							$package = getcwd();
-						} else {
-							// For other relative paths, construct manually
-							// This preserves the relative path structure even if intermediate dirs don't exist
-							$package = getcwd() . '/' . $package;
-						}
-					} else {
-						$package = $resolved;
-					}
-				} else {
-					// For other paths (not starting with . or /), try to resolve as local path
-					// If it exists locally, expand it; otherwise assume it's a package reference
-					$resolved = @realpath( $package );
-					if ( $resolved !== false ) {
-						// Path exists locally, use the resolved absolute path
-						$package = $resolved;
-					}
-					// If realpath fails, leave it unchanged (likely a package reference like vendor/package:1.0.0)
-				}
+				$package = PackageReferenceUtils::expand_local_path( $package );
 			}
 			unset( $package ); // Break the reference
 		}
@@ -1432,6 +1424,41 @@ HELP;
 	}
 
 	/**
+	 * Resolve and validate the internal --subpackage / --subpackage-parent options.
+	 *
+	 * The state is reset on every run, as the command instance is reused when
+	 * env:up is invoked in-process by run:e2e.
+	 *
+	 * @param InputInterface $input The command input.
+	 *
+	 * @throws \RuntimeException If the selection is invalid.
+	 */
+	private function resolve_subpackage_selection( InputInterface $input ): void {
+		$this->selected_subpackages  = [];
+		$this->subpackage_parent_dir = null;
+
+		$selected_subpackages = SubpackageSelector::get_requested_ids( (array) $input->getOption( 'subpackage' ) );
+		$parent_dir           = $input->getOption( 'subpackage-parent' );
+
+		if ( empty( $selected_subpackages ) ) {
+			if ( ! empty( $parent_dir ) ) {
+				throw new \RuntimeException( 'The --subpackage-parent option requires at least one --subpackage value.' );
+			}
+			return;
+		}
+
+		if ( empty( $parent_dir ) ) {
+			throw new \RuntimeException( 'The --subpackage option requires --subpackage-parent to be set.' );
+		}
+
+		$this->subpackage_parent_dir = SubpackageSelector::validate_selection(
+			$selected_subpackages,
+			[ PackageReferenceUtils::expand_local_path( $parent_dir ) ]
+		);
+		$this->selected_subpackages  = $selected_subpackages;
+	}
+
+	/**
 	 * Process test packages to extract requirements.
 	 *
 	 * @param array<string>   $test_packages Array of test package references (local paths or remote IDs).
@@ -1467,17 +1494,20 @@ HELP;
 						$output->writeln( "[DEBUG] env:up - Got manifest for $package_ref (likely from cache)" );
 					}
 
-					// Extract requirements from manifest
-					$this->extractManifestRequirements(
-						$manifest,
-						$package_ref,
-						$required_plugins,
-						$required_themes,
-						$required_secrets,
-						$requires_network,
-						$requires_tunnel,
-						$output
-					);
+					// Extract requirements from manifest (or from the selected subpackages' manifests)
+					$requirement_manifests = SubpackageSelector::get_requirement_manifests( $manifest, $package_ref, $this->selected_subpackages, $this->subpackage_parent_dir );
+					foreach ( $requirement_manifests as $requirement_ref => $requirement_manifest ) {
+						$this->extractManifestRequirements(
+							$requirement_manifest,
+							$requirement_ref,
+							$required_plugins,
+							$required_themes,
+							$required_secrets,
+							$requires_network,
+							$requires_tunnel,
+							$output
+						);
+					}
 				}
 			} catch ( \Exception $e ) {
 				// For local packages, try to read the manifest directly
@@ -1490,17 +1520,20 @@ HELP;
 							// Use TestPackageManifest to parse it properly
 							$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
 
-							// Extract requirements from manifest
-							$this->extractManifestRequirements(
-								$manifest,
-								$package_ref,
-								$required_plugins,
-								$required_themes,
-								$required_secrets,
-								$requires_network,
-								$requires_tunnel,
-								$output
-							);
+							// Extract requirements from manifest (or from the selected subpackages' manifests)
+							$requirement_manifests = SubpackageSelector::get_requirement_manifests( $manifest, $package_ref, $this->selected_subpackages, $this->subpackage_parent_dir );
+							foreach ( $requirement_manifests as $requirement_ref => $requirement_manifest ) {
+								$this->extractManifestRequirements(
+									$requirement_manifest,
+									$requirement_ref,
+									$required_plugins,
+									$required_themes,
+									$required_secrets,
+									$requires_network,
+									$requires_tunnel,
+									$output
+								);
+							}
 						}
 					} catch ( \Exception $inner_e ) {
 						if ( $output->isVerbose() ) {
