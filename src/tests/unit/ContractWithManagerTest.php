@@ -21,6 +21,10 @@ use Symfony\Component\Console\Output\BufferedOutput;
  * an observed one, and a Manager that ships a different key name would leave
  * them green while `--woo=nightly` quietly resolved to `latest` for good.
  * Re-capture this file once that change is deployed, and delete this paragraph.
+ *
+ * The `api` entry was added the same way, in the shape the Manager from
+ * Automattic/compatibility-dashboard QIT-1080 returned locally with
+ * core-api-tests published: `package`, `versions` and `nightly`.
  */
 class ContractWithManagerTest extends \QIT_CLI_Tests\QITTestCase {
 	public function setUp(): void {
@@ -105,5 +109,30 @@ class ContractWithManagerTest extends \QIT_CLI_Tests\QITTestCase {
 	 */
 	public function test_activation_selection_against_the_manager_payload( ?string $requested, string $expected ): void {
 		$this->assertSame( $expected, $this->select( $requested, ExposedRunActivationTestCommand::class ) );
+	}
+
+	/**
+	 * Only 11.0 is published for the Core API package, so the rc channel is an
+	 * unreleased version ahead of it.
+	 *
+	 * @return array<string, array<int, string|null>>
+	 */
+	public function api_selection_cases(): array {
+		return [
+			'patch release'        => [ '11.0.1', 'woocommerce/core-api-tests:11.0' ],
+			'stable channel'       => [ 'stable', 'woocommerce/core-api-tests:11.0' ],
+			'no version given'     => [ null, 'woocommerce/core-api-tests:11.0' ],
+			'older than anything'  => [ '10.9.4', 'woocommerce/core-api-tests:latest' ],
+			'rc channel, ahead'    => [ 'rc', 'woocommerce/core-api-tests:nightly' ],
+			'ahead and released'   => [ '11.1.0', 'woocommerce/core-api-tests:latest' ],
+			'nightly channel'      => [ 'nightly', 'woocommerce/core-api-tests:nightly' ],
+		];
+	}
+
+	/**
+	 * @dataProvider api_selection_cases
+	 */
+	public function test_api_selection_against_the_manager_payload( ?string $requested, string $expected ): void {
+		$this->assertSame( $expected, $this->select( $requested, ExposedRunWooApiTestCommand::class ) );
 	}
 }

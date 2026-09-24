@@ -16,6 +16,13 @@
         "11.1"
       ],
       "nightly": "nightly"
+    },
+    "api": {
+      "package": "woocommerce/core-api-tests",
+      "versions": [
+        "11.0"
+      ],
+      "nightly": "nightly"
     }
   },
   "versions": {
