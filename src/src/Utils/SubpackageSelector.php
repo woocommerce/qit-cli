@@ -68,7 +68,9 @@ class SubpackageSelector {
 					);
 				}
 
-				$local_dirs[] = $local_dir;
+				// Canonicalize so aliases of the same directory (trailing "/.", symlinks, etc.) dedupe correctly.
+				$real_dir     = realpath( $local_dir );
+				$local_dirs[] = $real_dir !== false ? $real_dir : $local_dir;
 			} else {
 				$remote_refs[] = $ref;
 			}

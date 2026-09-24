@@ -131,7 +131,7 @@ class SubpackageSelectorTest extends TestCase {
 			[ $dir ]
 		);
 
-		$this->assertEquals( $dir, $result );
+		$this->assertEquals( realpath( $dir ), $result );
 	}
 
 	/**
@@ -145,7 +145,27 @@ class SubpackageSelectorTest extends TestCase {
 			[ $dir ]
 		);
 
-		$this->assertEquals( $dir, $result );
+		$this->assertEquals( realpath( $dir ), $result );
+	}
+
+	/**
+	 * Test that different spellings of the same directory count as one local package.
+	 */
+	public function test_aliases_of_same_local_package_are_deduped(): void {
+		$dir  = $this->create_package_dir( $this->get_parent_manifest_data() );
+		$link = $dir . '-link';
+		symlink( $dir, $link );
+
+		try {
+			$result = SubpackageSelector::validate_selection(
+				[ 'woocommerce/checkout' ],
+				[ $dir, $dir . '/.', $dir . '/', $link ]
+			);
+		} finally {
+			unlink( $link );
+		}
+
+		$this->assertSame( realpath( $dir ), $result );
 	}
 
 	/**
