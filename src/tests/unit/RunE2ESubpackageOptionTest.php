@@ -2,6 +2,7 @@
 
 namespace QIT_CLI_Tests;
 
+use QIT_CLI\Utils\SubpackageSelector;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\StringInput;
 
@@ -74,5 +75,39 @@ class RunE2ESubpackageOptionTest extends QITTestCase {
 		$input = $this->get_parsed_run_e2e_command_input( $cli );
 
 		$this->assertSame( $expected, $input->getOption( 'subpackage' ) );
+	}
+
+	/**
+	 * Provide test cases for {@see test_empty_subpackage_values_are_rejected()}.
+	 *
+	 * @return array<string,array{0:string}>
+	 */
+	public function empty_subpackage_value_provider(): array {
+		return [
+			'equals sign with no value'         => [ '--subpackage=' ],
+			'empty quoted value'                => [ '--subpackage ""' ],
+			'whitespace-only value'             => [ '--subpackage=" "' ],
+			'empty value alongside a valid one' => [ '--subpackage woocommerce/sub-a --subpackage=' ],
+		];
+	}
+
+	/**
+	 * Test that empty `--subpackage` values survive parsing and are then rejected,
+	 * rather than being dropped (which would run the full parent package).
+	 *
+	 * @dataProvider empty_subpackage_value_provider
+	 *
+	 * @param string $cli The command line input value, without the `run:e2e` command.
+	 */
+	public function test_empty_subpackage_values_are_rejected( string $cli ): void {
+		$raw = $this->get_parsed_run_e2e_command_input( $cli )->getOption( 'subpackage' );
+
+		// Guard: Symfony accepts these as present-but-empty values rather than rejecting them.
+		$this->assertNotEmpty( $raw );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'The --subpackage option requires a non-empty subpackage ID.' );
+
+		SubpackageSelector::get_requested_ids( $raw );
 	}
 }

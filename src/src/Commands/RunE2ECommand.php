@@ -194,7 +194,11 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		/* ─ Validate --subpackage selection (fail fast, before any expensive work) ─ */
-		$requested_subpackages = array_values( array_unique( array_filter( (array) $input->getOption( 'subpackage' ) ) ) );
+		try {
+			$requested_subpackages = \QIT_CLI\Utils\SubpackageSelector::get_requested_ids( (array) $input->getOption( 'subpackage' ) );
+		} catch ( \RuntimeException $e ) {
+			return $this->fail_subpackage_selection( $input, $output, $e->getMessage() );
+		}
 		$subpackage_parent_dir = null;
 		if ( ! empty( $requested_subpackages ) ) {
 			// Validate against user-supplied test packages only (profile + CLI).

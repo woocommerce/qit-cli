@@ -15,6 +15,30 @@ use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 class SubpackageSelector {
 
 	/**
+	 * Prepare the raw --subpackage option values for validation.
+	 *
+	 * Empty or whitespace-only values are rejected rather than filtered out, so
+	 * that e.g. `--subpackage="$UNSET_VAR"` is rejected rather than being skipped.
+	 *
+	 * @param array<mixed> $raw_subpackage_ids Raw values of the --subpackage option.
+	 *
+	 * @return array<string> Unique subpackage IDs, in the order given.
+	 * @throws \RuntimeException If any value is empty or whitespace-only.
+	 */
+	public static function get_requested_ids( array $raw_subpackage_ids ): array {
+		foreach ( $raw_subpackage_ids as $subpackage_id ) {
+			if ( ! is_string( $subpackage_id ) || trim( $subpackage_id ) === '' ) {
+				throw new \RuntimeException(
+					"The --subpackage option requires a non-empty subpackage ID.\n" .
+					'If the value comes from a variable, make sure it is set.'
+				);
+			}
+		}
+
+		return array_values( array_unique( $raw_subpackage_ids ) );
+	}
+
+	/**
 	 * Validate a --subpackage selection against the candidate test packages.
 	 *
 	 * @param array<string> $subpackage_ids Requested subpackage IDs (full IDs, e.g. "namespace/name"). These values are expected to be normalized and unique.

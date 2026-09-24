@@ -78,6 +78,49 @@ class SubpackageSelectorTest extends TestCase {
 	}
 
 	/**
+	 * @return array<string,array{0:array<string>}>
+	 */
+	public function empty_subpackage_ids_provider(): array {
+		return [
+			'empty string'             => [ [ '' ] ],
+			'whitespace only'          => [ [ '  ' ] ],
+			'tab/newline only'         => [ [ "\t\n" ] ],
+			'empty alongside valid ID' => [ [ 'woocommerce/checkout', '' ] ],
+		];
+	}
+
+	/**
+	 * Test that empty or whitespace-only IDs are rejected, not filtered away.
+	 *
+	 * @dataProvider empty_subpackage_ids_provider
+	 *
+	 * @param array<string> $raw_ids Raw --subpackage values.
+	 */
+	public function test_empty_subpackage_ids_are_rejected( array $raw_ids ): void {
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'The --subpackage option requires a non-empty subpackage ID.' );
+
+		SubpackageSelector::get_requested_ids( $raw_ids );
+	}
+
+	/**
+	 * Test that valid IDs are deduplicated and otherwise returned unchanged.
+	 */
+	public function test_requested_ids_are_deduplicated(): void {
+		$this->assertSame(
+			[ 'woocommerce/checkout', 'woocommerce/cart' ],
+			SubpackageSelector::get_requested_ids( [ 'woocommerce/checkout', 'woocommerce/cart', 'woocommerce/checkout' ] )
+		);
+	}
+
+	/**
+	 * Test that no selection yields no requested IDs.
+	 */
+	public function test_no_requested_ids_returns_empty_array(): void {
+		$this->assertSame( [], SubpackageSelector::get_requested_ids( [] ) );
+	}
+
+	/**
 	 * Test happy path: one local package, valid subpackage IDs.
 	 */
 	public function test_valid_selection_returns_parent_dir(): void {
