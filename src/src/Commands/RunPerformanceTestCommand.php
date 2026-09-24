@@ -118,6 +118,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'local', null, InputOption::VALUE_NONE, 'Run tests locally instead of on QIT infrastructure' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'blueprint' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'xdebug' )
@@ -148,7 +149,18 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		}
 
 		// Handle group registration (same for local and remote).
-		$is_local     = $input->getOption( 'local' );
+		$is_local = $input->getOption( 'local' );
+
+		// Performance environments run no test package phases, so Blueprint steps
+		// would never execute; remote runs are built by the Manager, which knows
+		// nothing about Blueprints at all. Refuse here rather than let env:up fail
+		// with the message wrapped in its JSON envelope.
+		if ( $input->getOption( 'blueprint' ) ) {
+			$output->writeln( '<error>Blueprints are not supported in performance tests — they only apply to e2e environments (qit env:up, qit run:e2e).</error>' );
+
+			return Command::INVALID;
+		}
+
 		$group_result = $this->handle_group_registration(
 			$input,
 			$output,

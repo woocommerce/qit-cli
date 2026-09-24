@@ -62,6 +62,22 @@ class QITE2ETestCase extends TestCase {
 					return ! empty( $value ) && strlen( $value ) > 1 && strlen( $value ) < 60;
 				},
 			],
+			'extension_specs'                 => [
+				'normalize' => static function ( $value ) {
+					// Resolved versions change with every WP/Woo release, which would break snapshots.
+					foreach ( $value as &$spec ) {
+						if ( isset( $spec['resolved_version'] ) ) {
+							$spec['resolved_version'] = 'normalized';
+						}
+					}
+					unset( $spec );
+
+					return $value;
+				},
+				'validate'  => static function ( $value ) {
+					return is_array( $value );
+				},
+			],
 			'test_results_manager_url'        => [
 				'normalize' => 'https://test-results-manager.com',
 				'validate'  => static function ( $value ) {
@@ -299,6 +315,7 @@ class QITE2ETestCase extends TestCase {
 					}
 
 					$is_woo_e2e = stripos( $file_path, 'woo-e2e/' ) !== false;
+					$is_woo_api = stripos( $file_path, 'woo-api/' ) !== false;
 
 					// Remove lines containing "Using cached file" from all tests' stdout arrays,
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
@@ -306,6 +323,14 @@ class QITE2ETestCase extends TestCase {
 						foreach ( $value['results']['tests'] as &$test ) {
 							// Ignore retries.
 							$test['retryAttempts'] = [];
+
+							if (
+								( $is_woo_e2e || $is_woo_api ) &&
+								( $test['name'] ?? '' ) === 'wp plugin activate woocommerce' &&
+								( $test['extra']['output'] ?? '' ) === "Warning: Plugin 'woocommerce' is already active.\nSuccess: Plugin already activated."
+							) {
+								$test['extra']['output'] = "Success: Plugin already activated.\nWarning: Plugin 'woocommerce' is already active.";
+							}
 
 							/* -----------------------------------------------------------------
 							 * Playwright hook-step normalisation
@@ -342,15 +367,18 @@ class QITE2ETestCase extends TestCase {
 
 							if ( $is_woo_e2e && isset( $test['stdout'] ) ) {
 								$test['stdout'] = [ '[IGNORED FOR WOO-E2E]' ];
-								continue;
-							}
-
-							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
+							} elseif ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
 								$filtered          = [];
 								$processes_console = []; // track unique "Console " lines
 
 								foreach ( $test['stdout'] as &$line ) {
 									if ( stripos( $line, 'Using cached file' ) !== false ) {
+										continue;
+									}
+
+									// Per-probe smoke lines vary between runs (probe set and durations).
+									// The stable "QIT_ACTIVATION_SMOKE_PASSED" summary line is kept.
+									if ( strpos( $line, '[QIT activation smoke]' ) !== false ) {
 										continue;
 									}
 
@@ -456,6 +484,13 @@ class QITE2ETestCase extends TestCase {
 									foreach ( $test['steps'] as &$step ) {
 										if ( isset( $step['name'] ) ) {
 											$step['name'] = preg_replace( '/id\s*\d+/i', 'id <ID>', $step['name'] );
+											if ( $is_woo_e2e && ( $test['name'] ?? '' ) === 'can create a variable product' ) {
+												$step['name'] = preg_replace(
+													'/^Type "[^"]+" into the "Product name" input field\.$/',
+													'Type "<PRODUCT_NAME>" into the "Product name" input field.',
+													$step['name']
+												);
+											}
 										}
 										if ( isset( $step['duration'] ) ) {
 											$step['duration'] = 999;
@@ -626,9 +661,15 @@ class QITE2ETestCase extends TestCase {
 								continue;
 							}
 
-							// Ignore containing "Maximum execution time of 30 seconds exceeded in" in E2E.
-							if ( stripos( $file_path, 'woo-e2e/' ) !== false && stripos( $debug_log['message'], 'Maximum execution time of 30 seconds exceeded in' ) !== false ) {
-								echo "Removing 'Maximum execution time of 30 seconds exceeded in' from debug_log.message\n";
+							// Ignore a known intermittent timeout in WordPress core without hiding extension timeouts.
+							if (
+								stripos( $file_path, 'woo-e2e/' ) !== false &&
+								preg_match(
+									'#Maximum execution time of 30 seconds exceeded in [^\r\n]*/wp-includes/class-wp-hook\.php on line \{LINE\}(?:\r?\n|$)#i',
+									$debug_log['message']
+								)
+							) {
+								echo "Removing known WordPress core hook timeout from debug_log.message\n";
 								unset( $value[ $k ] );
 								continue;
 							}
@@ -736,11 +777,11 @@ class QITE2ETestCase extends TestCase {
 
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
-					// Special case: test_result_json is optional for e2e and activation test types
+					// Special case: test_result_json is optional for test types that report results via ctrf_json.
 					if ( $k === 'test_result_json' ) {
 						$test_type = $j['test_type'] ?? '';
-						if ( in_array( $test_type, [ 'e2e', 'activation' ], true ) && empty( $v ) ) {
-							// Skip validation for empty test_result_json in e2e/activation tests
+						if ( in_array( $test_type, [ 'e2e', 'activation', 'woo-api' ], true ) && empty( $v ) ) {
+							// Skip validation for empty test_result_json in e2e/activation/woo-api tests
 							continue;
 						}
 					}

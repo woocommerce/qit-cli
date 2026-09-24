@@ -7,9 +7,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RunWooE2ETestCommand extends RunE2ECommand {
 	use ExtensionSetTrait;
+	use SelectsVersionedTestPackage;
 
 	protected static $defaultName = 'run:woo-e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	protected string $test_type   = 'e2e';
+
+	/** The key this package is published under in sync data. */
+	protected function package_test_type(): string {
+		return 'e2e';
+	}
+
+	/**
+	 * Used when the Manager offers nothing for the requested WooCommerce version,
+	 * which covers a Manager that predates the lookup table as well as a version
+	 * no published package covers.
+	 */
+	protected function fallback_test_package(): string {
+		return 'woocommerce/core-e2e-tests:latest';
+	}
 
 	protected function configure(): void {
 		parent::configure();
@@ -29,7 +44,7 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 		}
 
 		if ( empty( $input->getOption( 'test-package' ) ) ) {
-			$input->setOption( 'test-package', [ 'woocommerce/core-e2e-tests:latest' ] );
+			$input->setOption( 'test-package', [ $this->resolve_test_package( $input, $output ) ] );
 		}
 
 		return parent::doExecute( $input, $output );

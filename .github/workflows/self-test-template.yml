@@ -18,6 +18,7 @@ on:
 jobs:
   self_test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       NO_COLOR: 1
       FORCE_COLOR: 0
@@ -28,36 +29,28 @@ jobs:
         run: mkdir -p ${{ github.workspace }}/tmp
       - name: Wait before request to avoid 429
         if: github.event_name != 'workflow_dispatch'
+        env:
+          TEST_TYPE: ${{ inputs.test_type }}
         run: |
-          if [[ "${{ inputs.test_type }}" == "activation" ]]; then
-            echo "Test type is activation. No wait."
-          elif [[ "${{ inputs.test_type }}" == "api" ]]; then
-            echo "Test type is api. Waiting 30 seconds."
-            sleep 30
-          elif [[ "${{ inputs.test_type }}" == "phpstan" ]]; then
-            echo "Test type is phpstan. Waiting 60 seconds."
-            sleep 60
-          elif [[ "${{ inputs.test_type }}" == "security" ]]; then
-            echo "Test type is security. Waiting 90 seconds."
-            sleep 90
-          elif [[ "${{ inputs.test_type }}" == "phpcompatibility" ]]; then
-            echo "Test type is phpcompatibility. Waiting 120 seconds."
-            sleep 120
-          
-          # E2E should always be last, as it takes long and uses queue slots.
-          elif [[ "${{ inputs.test_type }}" == "e2e" ]]; then
-            echo "Test type is e2e. Waiting 150 seconds."
-            sleep 150
-          
-          else
-            echo "Unknown test type. No wait."
-          fi
+          case "$TEST_TYPE" in
+            activation)       WAIT_SECONDS=0 ;;
+            woo-api)          WAIT_SECONDS=30 ;;
+            phpstan)          WAIT_SECONDS=60 ;;
+            security)         WAIT_SECONDS=90 ;;
+            phpcompatibility) WAIT_SECONDS=120 ;;
+            malware)          WAIT_SECONDS=150 ;;
+            validation)       WAIT_SECONDS=180 ;;
+            woo-e2e)          WAIT_SECONDS=210 ;;
+            *) echo "::error::Unknown test type: $TEST_TYPE"; exit 1 ;;
+          esac
+          echo "Test type is $TEST_TYPE. Waiting $WAIT_SECONDS seconds."
+          sleep "$WAIT_SECONDS"
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '7.4'
 
@@ -68,6 +61,10 @@ jobs:
       - name: Composer install on Src
         working-directory: src
         run: composer install
+
+      - name: Test self-test runner
+        working-directory: _tests/managed_tests
+        run: vendor/bin/phpunit --do-not-cache-result --filter '/(QITLiveOutputTest|NormalizationTest)/' tests/self_test
 
       - name: Connect to QIT
         run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}"
@@ -87,7 +84,7 @@ jobs:
 
       - name: Restore ZIP Image Cache if it exists
         id: cache-docker-zip
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: cache-zip
           key: cache-docker-zip-${{ env.ZIP_YEAR }}-${{ env.ZIP_MONTH }}
@@ -111,7 +108,7 @@ jobs:
       # After the tests run, upload all qit_non_json_ files (each test has its own)
       - name: Upload all QIT non-JSON output files
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: qit-non-json-outputs
           path: '/tmp/qit_non_json_*'

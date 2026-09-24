@@ -11,16 +11,31 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Runs the official activation test‑package against the current SUT.
  *
  * Behavioural differences compared with run:e2e:
- *   • The test‑package is *always* `woocommerce/activation:stable`
- *     (cannot be overridden – the CLI flag is injected programmatically).
+ *   • The test‑package defaults to the `woocommerce/activation` version covering
+ *     the WooCommerce under test, and is only chosen when the caller named none.
  *   • Plugins / themes are not activated inside the container.
  *   • Playwright retries are disabled.
  */
 class RunActivationTestCommand extends RunE2ECommand {
 	use ExtensionSetTrait;
+	use SelectsVersionedTestPackage;
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	protected string $test_type   = 'activation';
+
+	/** The key this package is published under in sync data. */
+	protected function package_test_type(): string {
+		return 'activation';
+	}
+
+	/**
+	 * Used when the Manager offers nothing for the requested WooCommerce version,
+	 * which covers a Manager that predates the lookup table as well as a version
+	 * no published package covers.
+	 */
+	protected function fallback_test_package(): string {
+		return 'woocommerce/activation:latest';
+	}
 
 	/******************************************************************
 	 * CLI definition
@@ -78,8 +93,18 @@ class RunActivationTestCommand extends RunE2ECommand {
 		/****************************************************************
 		 * Inject activation‑specific defaults BEFORE delegating to parent
 		 */
-		// Always use 'latest' version for activation test package
-		$input->setOption( 'test-package', [ 'woocommerce/activation:latest' ] );
+		// The activation specs drive WooCommerce's admin UI, so their selectors are
+		// tied to the markup of a WooCommerce release. Pick the package published
+		// for the version this run installs.
+		//
+		// Only when nothing was named, as `run:woo-e2e` already does. Overwriting
+		// discarded what the caller asked for, and the CI runner has to be able to
+		// hand over the package the Manager assigned: the bundled CLI is older than
+		// this resolver, so a hosted run that resolved for itself would execute
+		// `latest` while the Manager recorded a version.
+		if ( empty( $input->getOption( 'test-package' ) ) ) {
+			$input->setOption( 'test-package', [ $this->resolve_test_package( $input, $output ) ] );
+		}
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
 

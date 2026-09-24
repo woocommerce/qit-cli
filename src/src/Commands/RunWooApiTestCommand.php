@@ -8,9 +8,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RunWooApiTestCommand extends RunE2ECommand {
 	use ExtensionSetTrait;
+	use SelectsVersionedTestPackage;
 
 	protected static $defaultName = 'run:woo-api'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	protected string $test_type   = 'woo-api';
+
+	/** The key this package is published under in sync data. */
+	protected function package_test_type(): string {
+		return 'api';
+	}
+
+	protected function fallback_test_package(): string {
+		return 'woocommerce/core-api-tests:latest';
+	}
 
 	protected function configure(): void {
 		parent::configure();
@@ -37,7 +47,7 @@ class RunWooApiTestCommand extends RunE2ECommand {
 		}
 
 		if ( empty( $input->getOption( 'test-package' ) ) ) {
-			$input->setOption( 'test-package', [ 'woocommerce/core-api-tests:latest' ] );
+			$input->setOption( 'test-package', [ $this->resolve_test_package( $input, $output ) ] );
 		}
 
 		return parent::doExecute( $input, $output );

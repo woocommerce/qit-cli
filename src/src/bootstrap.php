@@ -7,6 +7,7 @@ use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
 use QIT_CLI\Commands\CacheCommand;
+use QIT_CLI\Commands\CompareCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
@@ -15,6 +16,8 @@ use QIT_CLI\Commands\ShowReportCommand;
 use QIT_CLI\Commands\ClaudeTipDismissCommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\FeedbackCommand;
+use QIT_CLI\Commands\Blueprint\BlueprintExportCommand;
+use QIT_CLI\Commands\Blueprint\BlueprintImportCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -215,6 +218,8 @@ try {
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
 	$application->add( $container->make( EnvSourceCommand::class ) );
 	$application->add( $container->make( ResetEnvironmentCommand::class ) );
+	$application->add( $container->make( BlueprintImportCommand::class ) );
+	$application->add( $container->make( BlueprintExportCommand::class ) );
 } catch ( \Exception $e ) {
 	App::make( Output::class )->writeln( $e->getMessage() );
 }
@@ -271,6 +276,9 @@ if ( $is_connected_to_backend ) {
 	// Get a single or multiple test runs.
 	$application->add( $container->make( GetCommand::class ) );
 	$application->add( $container->make( GetMultipleCommand::class ) );
+
+	// Compare two finished test runs.
+	$application->add( $container->make( CompareCommand::class ) );
 
 	// Open a test run result in the browser.
 	$application->add( $container->make( OpenCommand::class ) );

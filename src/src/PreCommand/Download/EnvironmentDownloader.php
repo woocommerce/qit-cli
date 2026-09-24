@@ -26,8 +26,8 @@ class EnvironmentDownloader {
 		$manager_hashes = $this->cache->get_manager_sync_data( 'environments' );
 
 		if ( $this->output->isVeryVerbose() ) {
-			$this->output->writeln( 'Environment hashes from the Manager' );
-			$this->output->writeln( json_encode( $manager_hashes, JSON_PRETTY_PRINT ) );
+			// Keep the label and JSON on the same line so the qit_json stream filter doesn't pass this through as valid JSON in --json mode.
+			$this->output->writeln( 'Environment hashes from the Manager: ' . json_encode( $manager_hashes ) );
 		}
 
 		if ( ! isset( $manager_hashes[ $env_name ]['zip_checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {

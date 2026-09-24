@@ -49,6 +49,9 @@ Our Alpine-based Docker images are perfect for CI systems, while also offering n
 
 [Read more about the Local Test Environment.](https://qit.woo.com/docs/environment/getting-started)
 
+Environments can also be defined with a [WordPress Playground Blueprint](docs/blueprints.md) _(experimental)_:
+`qit env:up --blueprint=./blueprint.json`.
+
 #### And much more:
 
 - **Configurable Environment**: Configurable PHP, WordPress, WooCommerce versions, and more.
@@ -57,6 +60,7 @@ Our Alpine-based Docker images are perfect for CI systems, while also offering n
 - **GitHub Integration**: Integrate QIT into your PR reviews with GitHub Actions.
 - **Test Reports**: Detailed test reports to help you understand the results.
 - **Notifications**: Stay informed with test result notifications.
+- **[Comparing Test Runs](docs/compare.md)**: `qit compare <run-a> <run-b>` shows what changed between two runs that already happened.
 
 ## Documentation
 

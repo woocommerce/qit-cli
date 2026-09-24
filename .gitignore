@@ -62,3 +62,5 @@ packages/qit-runtime/node_modules/
 src/tests/integration/tests/TestPackages/Runtime/fixtures/*/node_modules/
 src/tests/integration/tests/TestPackages/Runtime/fixtures/*/package-lock.json
 src/tests/integration/tests/TestPackages/Runtime/fixtures/*/results/
+
+.envrc

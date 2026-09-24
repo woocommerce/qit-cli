@@ -155,6 +155,7 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'plugin' )
 			->reuseOption( 'env:up', 'theme' )
 			->reuseOption( 'env:up', 'volume' )
+			->reuseOption( 'env:up', 'blueprint' )
 			->reuseOption( 'env:up', 'php_extension' )
 			->reuseOption( 'env:up', 'object_cache' )
 			->reuseOption( 'env:up', 'xdebug' )
@@ -244,7 +245,11 @@ class RunE2ECommand extends QITCommand {
 		$test_packages = $input->get_test_packages();
 		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
 			array_filter( $test_packages, fn( $pkg ) => str_starts_with( $pkg, 'woocommerce/activation:' ) ) ) {
-			$output->writeln( '<info>Running activation test scenario.</info>' );
+			if ( ! $input->getOption( 'json' ) ) {
+				// stdout is a payload in JSON mode, and a stray line here is enough
+				// for the wrapper to report the whole run as non-JSON output.
+				$output->writeln( '<info>Running activation test scenario.</info>' );
+			}
 			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 			$input->setOption( 'skip_activating_plugins', true );
 			$input->setOption( 'skip_activating_themes', true );
@@ -336,6 +341,22 @@ class RunE2ECommand extends QITCommand {
 		// Pass original test package references to env:up for requirement processing
 		// env:up will handle downloading (or cache hits) and requirement extraction
 		$original_test_packages = $input->get_test_packages(); // Get the original refs from input
+
+		// A Blueprint contributes its steps as a utility package. env:up runs with
+		// --skip-test-phases here, so this command owns their execution.
+		$blueprint_path = $input->hasOption( 'blueprint' ) ? $input->getOption( 'blueprint' ) : null;
+
+		if ( $blueprint_path ) {
+			$blueprints        = App::make( \QIT_CLI\Blueprints\BlueprintEnvironment::class );
+			$transpiled        = $blueprints->prepare( (string) $blueprint_path );
+			$blueprint_package = $blueprints->materialize( (string) $blueprint_path, $transpiled );
+
+			$blueprints->report( (string) $blueprint_path, $transpiled, $output );
+
+			if ( $blueprint_package !== null ) {
+				array_unshift( $original_test_packages, $blueprint_package );
+			}
+		}
 
 		// Merge utility packages from the selected environment
 		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields

@@ -1,0 +1,45 @@
+Comparing baseline 1001 (A) against candidate 1002 (B)
+
+Environment       Baseline                     Candidate                            
+Test type         activation                   activation                           
+WordPress         6.7                          6.7                                  
+WooCommerce       11.0.1                       11.1.0                       differs 
+PHP               8.2                          8.2                                  
+Extension         My WooCommerce Plugin        My WooCommerce Plugin                
+Extension version 1.0.0                        1.0.0                                
+Test packages     woocommerce/activation@1.2.0 woocommerce/activation@1.2.0         
+
+Results Baseline Candidate Delta 
+Tests   4        4         0     
+Passed  2        1         -1    
+Failed  2        2         0     
+Skipped 0        1         +1    
+Pending 0        0         0     
+Other   0        0         0     
+
+Tests
+
+Newly failing (1)
+  plugin-a (passed -> failed)
+
+Added (1)
+  plugin-new (skipped)
+
+Still failing (1)
+  plugin-c (failed)
+
+Resolved (1)
+  plugin-b (failed -> passed)
+
+Removed (1)
+  plugin-gone (passed)
+
+Annotation changes (1)
+  + plugin-a [error] Fatal on activation
+
+Nothing in: Other status changes.
+
+0 test(s) unchanged.
+The candidate introduced 1 failure(s).
+
+Report: https://qit.woo.com/?qit_compare=1001.abc~1002.def

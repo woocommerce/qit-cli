@@ -82,6 +82,41 @@ class PrepareDebugLog {
 					continue;
 				}
 
+				/*
+				 * Ignore "table doesn't exist" DB errors for WooCommerce core tables that WooCommerce
+				 * queries during its own activation, before WC_Install creates the tables. These are
+				 * WooCommerce-core false positives (the query is Woo's own, about Woo's own table), not
+				 * SUT bugs. wpdb::print_error() lines ("WordPress database error ... made by ...") carry
+				 * no "in <file>" clause, so the generic Woo-core filter above never matches them.
+				 *   - wc_tax_rate_classes: queried via tax settings during boot.
+				 *   - woocommerce_attribute_taxonomies: queried by VisualAttributeTermAdmin (@since WC 10.9.0)
+				 *     during init_hooks, hit under plugin_sandbox_scrape before install runs.
+				 * Matched prefix-agnostically (via the core table suffix) so a non-default DB prefix is still covered.
+				 */
+				$woo_core_activation_tables = [
+					'wc_tax_rate_classes',
+					'woocommerce_attribute_taxonomies',
+				];
+
+				if (
+					! $is_testing_woocommerce_core
+					&& ! $has_sut_slug_in_error
+					&& stripos( $line, 'WordPress database error' ) !== false
+					&& stripos( $line, 'exist for query' ) !== false
+				) {
+					$is_woo_core_activation_table_error = false;
+					foreach ( $woo_core_activation_tables as $woo_core_table ) {
+						if ( stripos( $line, $woo_core_table ) !== false ) {
+							$is_woo_core_activation_table_error = true;
+							break;
+						}
+					}
+
+					if ( $is_woo_core_activation_table_error ) {
+						continue;
+					}
+				}
+
 				// Ignore errors coming from wp-mail-logging, if it's not the SUT. This is a plugin we install on all E2E tests.
 				$error_from_wp_mail_logging = stripos( $line, 'in /var/www/html/wp-content/plugins/wp-mail-logging/' ) !== false;
 				$is_testing_wp_mail_logging = $sut_slug === 'wp-mail-logging';

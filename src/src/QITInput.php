@@ -225,6 +225,7 @@ class QITInput implements InputInterface {
 			'theme',
 			'volume',
 			'php_extension',
+			'blueprint',
 			'object_cache',
 			'xdebug',
 			'tunnel',
@@ -254,6 +255,11 @@ class QITInput implements InputInterface {
 
 		// 2. CLI options override profile defaults
 		foreach ( $env_up_options as $opt ) {
+			// Not every command defines every env:up option (--blueprint, for one).
+			if ( ! $this->option_is_defined( $opt ) ) {
+				continue;
+			}
+
 			if ( $this->hasOption( $opt ) ) {
 				$value = $this->getOption( $opt );
 				if ( $value !== null && $value !== false ) {
@@ -275,6 +281,22 @@ class QITInput implements InputInterface {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Whether the running command declares this option at all.
+	 *
+	 * InputInterface exposes no definition, so ask it for the value and treat a
+	 * rejection as "not declared".
+	 */
+	private function option_is_defined( string $name ): bool {
+		try {
+			$this->symfony_input->getOption( $name );
+
+			return true;
+		} catch ( \Symfony\Component\Console\Exception\InvalidArgumentException $e ) {
+			return false;
+		}
 	}
 
 	/**

@@ -29,12 +29,19 @@ class ListCommand extends QITCommand {
 
 	protected function configure(): void {
 		parent::configure();
-		$test_types_list = implode( ', ', $this->cache->get_manager_sync_data( 'test_types' ) );
+		$test_types_list = implode( ', ', $this->get_allowed_test_types() );
 		$this
 			->setDescription( 'List test runs.' )
 			->addOption( 'extensions', 'e', InputOption::VALUE_OPTIONAL, '(Optional) Retrieve results for these extensions (Accepts slugs or IDs, comma-separated).' )
 			->addOption( 'test_status', 's', InputOption::VALUE_OPTIONAL, '(Optional) What test status to retrieve.' )
-			->addOption( 'test_types', 't', InputOption::VALUE_OPTIONAL, '(Optional) What test types to retrieve. Allowed values: ' . $test_types_list, $test_types_list )
+
+			/*
+			 * No default on purpose: omitting "test_types" makes the Manager return every test type.
+			 * Defaulting to the full sync list instead sent every known test type as an explicit
+			 * filter, which failed validation as soon as sync advertised a test type that the
+			 * endpoint schema did not allow yet ("Invalid parameter(s): test_types").
+			 */
+			->addOption( 'test_types', 't', InputOption::VALUE_OPTIONAL, '(Optional) What test types to retrieve (comma-separated). Defaults to all. Allowed values: ' . $test_types_list )
 			->addOption( 'page', 'p', InputOption::VALUE_OPTIONAL, '(Optional) The page to get.', 1 )
 			->addOption( 'per_page', 'pp', InputOption::VALUE_OPTIONAL, '(Optional) How many results per page.', 10 )
 			->setHelp( <<<'HELP'
@@ -45,7 +52,33 @@ HELP
 			);
 	}
 
+	/**
+	 * The test types this CLI knows about, as advertised by the Manager sync.
+	 *
+	 * @return array<string>
+	 */
+	protected function get_allowed_test_types(): array {
+		return array_values( (array) $this->cache->get_manager_sync_data( 'test_types' ) );
+	}
+
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		$test_types = $input->getOption( 'test_types' );
+
+		if ( ! empty( $test_types ) ) {
+			$allowed_test_types = $this->get_allowed_test_types();
+			$invalid_test_types = array_diff( array_filter( array_map( 'trim', explode( ',', $test_types ) ) ), $allowed_test_types );
+
+			if ( ! empty( $invalid_test_types ) ) {
+				$output->writeln( sprintf(
+					'<error>Invalid test type(s): %s. Allowed values: %s</error>',
+					implode( ', ', $invalid_test_types ),
+					implode( ', ', $allowed_test_types )
+				) );
+
+				return Command::FAILURE;
+			}
+		}
+
 		if ( $input->getOption( 'extensions' ) ) {
 			foreach ( explode( ',', $input->getOption( 'extensions' ) ) as $e ) {
 				if ( is_numeric( $e ) ) {
@@ -64,16 +97,26 @@ HELP
 			$extensions = implode( ',', $extensions );
 		}
 
+		$post_body = [
+			'woo_ids'  => $extensions,
+			// The endpoint parameter is "paged", not "page".
+			'paged'    => $input->getOption( 'page' ),
+			'per_page' => $input->getOption( 'per_page' ),
+		];
+
+		// Only send the filters that were actually set. Empty filters would be rejected by the schema.
+		foreach ( [ 'test_status', 'test_types' ] as $filter ) {
+			$filter_value = $input->getOption( $filter );
+
+			if ( ! empty( $filter_value ) ) {
+				$post_body[ $filter ] = $filter_value;
+			}
+		}
+
 		try {
 			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get' ) )
 				->with_method( 'POST' )
-				->with_post_body( [
-					'woo_ids'     => $extensions,
-					'test_status' => $input->getOption( 'test_status' ),
-					'test_types'  => $input->getOption( 'test_types' ),
-					'page'        => $input->getOption( 'page' ),
-					'per_page'    => $input->getOption( 'per_page' ),
-				] )
+				->with_post_body( $post_body )
 				->request();
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
