@@ -57,12 +57,15 @@ const ENV_TS_MAPPING: Record<string, string> = {
   'QIT_PHP_VERSION':        'env.versions.php',
 };
 
+// Set by the PHP CLI for humans debugging with `qit env:up --xdebug`; not part of the runtime API.
+const NOT_EXPOSED = ['QIT_XDEBUG', 'QIT_XDEBUG_MODE', 'QIT_XDEBUG_PORT'];
+
 describe('env.ts ↔ EnvironmentVars.php sync', () => {
   it('env.ts covers every QIT_* variable set by the PHP CLI', () => {
     const phpVars = extractPhpEnvVarNames();
     const mappedVars = Object.keys(ENV_TS_MAPPING).sort();
 
-    const unmapped = phpVars.filter(v => !mappedVars.includes(v));
+    const unmapped = phpVars.filter(v => !mappedVars.includes(v) && !NOT_EXPOSED.includes(v));
 
     expect(unmapped).toEqual([]);
   });
