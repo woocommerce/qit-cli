@@ -28,7 +28,7 @@ export const qit = {
   hasAction,
   package: loadPackage,
   waitFor,
-  version: '0.1.3',
+  version: '0.1.4',
 };
 
 export default qit;
