@@ -21,8 +21,9 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
+      # OIDC trusted publishing needs npm >= 11.5.1; npm 12 no longer installs on Node 20.
       - name: Ensure npm supports OIDC
-        run: npm install -g npm@latest
+        run: npm install -g npm@11
 
       - name: Install, test, build
         working-directory: packages/qit-runtime
