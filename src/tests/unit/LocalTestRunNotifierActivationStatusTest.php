@@ -3,16 +3,18 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\E2E\Result\TestResult;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Utils\LocalTestRunNotifier;
+use Symfony\Component\Console\Command\Command;
 use function QIT_CLI\get_manager_url;
 
 /**
- * Consumers treat an activation `warning` as "works, with non-fatal PHP errors"
- * (WooCommerce.com counts it as passing for its badge, QIT-1111), so a fatal or
- * a failed assertion must never end as `warning`.
+ * An activation `warning` means the extension works but logged non-fatal PHP
+ * errors; consumers may count it as passing, so a fatal or a failed assertion
+ * must never end as `warning`.
  */
 class LocalTestRunNotifierActivationStatusTest extends QITTestCase {
 	private const NOTICE    = [
@@ -33,21 +35,21 @@ class LocalTestRunNotifierActivationStatusTest extends QITTestCase {
 	}
 
 	/**
-	 * @return array<string, array{bool, bool, int, string}>
+	 * @return array<string, array{bool, bool, int, string, int|null}>
 	 */
 	public function activation_status_cases(): array {
 		return [
-			'clean run'                         => [ false, false, 0, 'success' ],
-			'non-fatal PHP errors only'         => [ true, false, 0, 'warning' ],
-			'fatal alongside non-fatal errors'  => [ true, true, 0, 'failed' ],
-			'failed assertion alongside notice' => [ true, false, 1, 'failed' ],
+			'clean run'                         => [ false, false, 0, 'success', null ],
+			'non-fatal PHP errors only'         => [ true, false, 0, 'warning', RunE2ECommand::WARNING ],
+			'fatal alongside non-fatal errors'  => [ true, true, 0, 'failed', Command::FAILURE ],
+			'failed assertion alongside notice' => [ true, false, 1, 'failed', Command::FAILURE ],
 		];
 	}
 
 	/**
 	 * @dataProvider activation_status_cases
 	 */
-	public function test_activation_run_is_warning_only_for_non_fatal_errors( bool $notice, bool $fatal, int $failed_assertions, string $expected_status ): void {
+	public function test_activation_run_is_warning_only_for_non_fatal_errors( bool $notice, bool $fatal, int $failed_assertions, string $expected_status, ?int $expected_exit_code ): void {
 		$env_info          = new E2EEnvInfo();
 		$env_info->sut     = [
 			'slug'    => 'my-extension',
@@ -88,8 +90,9 @@ class LocalTestRunNotifierActivationStatusTest extends QITTestCase {
 			}
 		};
 
-		App::make( LocalTestRunNotifier::class )->notify_test_finished( $test_result, null, 'activation' );
+		[ , $exit_code ] = App::make( LocalTestRunNotifier::class )->notify_test_finished( $test_result, null, 'activation' );
 
 		$this->assertSame( $expected_status, App::getVar( 'mocked_request' )['post_body']['status'] );
+		$this->assertSame( $expected_exit_code, $exit_code );
 	}
 }
