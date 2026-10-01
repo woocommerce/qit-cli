@@ -167,6 +167,8 @@ class ExtensionCacheManager {
 		// Skip if already downloaded
 		if ( ! empty( $extension->downloaded_source ) && file_exists( $extension->downloaded_source ) ) {
 			debug_log( "  Already downloaded at: {$extension->downloaded_source}" );
+			// is_cached() sets downloaded_source on a cache hit without detecting the entrypoint.
+			$this->entrypoint_detector->detect( $extension );
 
 			return;
 		}
