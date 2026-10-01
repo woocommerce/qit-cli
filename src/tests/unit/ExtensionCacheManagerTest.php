@@ -41,6 +41,25 @@ class ExtensionCacheManagerTest extends QITTestCase {
 		return (bool) $ref->invoke( $cache_manager, $zip_path, $extension );
 	}
 
+	public function test_cache_hit_found_by_is_cached_still_detects_entrypoint(): void {
+		$cache_manager = App::make( ExtensionCacheManager::class );
+		$cache_dir     = Config::get_qit_dir() . 'cache';
+		$slug          = 'my-awesome-plugin';
+
+		$ext       = new Extension( $slug, 'plugin', "https://example.com/$slug.zip" );
+		$ext->from = 'url';
+
+		// A zip left in the cache by an earlier run within the same cache window.
+		$make_cache_path = new \ReflectionMethod( ExtensionCacheManager::class, 'make_cache_path' );
+		$make_cache_path->setAccessible( true );
+		$this->write_plugin_zip( $make_cache_path->invoke( $cache_manager, $ext, $cache_dir ), $slug, '1.0.0' );
+
+		$this->assertTrue( $cache_manager->is_cached( $ext, $cache_dir ) );
+		$cache_manager->ensure_cached( $ext, $cache_dir );
+
+		$this->assertSame( "$slug/$slug.php", $ext->entrypoint );
+	}
+
 	public function test_woocommerce_dev_cache_expires_after_five_minutes(): void {
 		$cache_manager = App::make( ExtensionCacheManager::class );
 		$slug          = 'woocommerce';
