@@ -10,13 +10,21 @@ use function QIT_CLI\debug_log;
  */
 class EntrypointDetector {
 	/**
-	 * Detect the entrypoint for an extension
+	 * Detect the entrypoint for an extension and, for a local source, its version.
 	 *
 	 * @param Extension $extension The extension to detect entrypoint for.
 	 *
 	 * @return void
 	 */
 	public function detect( Extension $extension ): void {
+		$this->detect_entrypoint( $extension );
+		$this->detect_local_version( $extension );
+	}
+
+	/**
+	 * Detect the entrypoint, unless an earlier step already did.
+	 */
+	protected function detect_entrypoint( Extension $extension ): void {
 		if ( ! empty( $extension->entrypoint ) ) {
 			debug_log( "Entrypoint already detected for {$extension->slug}: {$extension->entrypoint}" );
 
@@ -42,6 +50,65 @@ class EntrypointDetector {
 		if ( empty( $extension->entrypoint ) ) {
 			debug_log( "WARNING: No entrypoint found for {$extension->slug}", 'warning' );
 		}
+	}
+
+	/**
+	 * A local directory or zip has no version until its header is read; without it the Manager
+	 * receives "undefined" and can't tell one product update from the next.
+	 */
+	protected function detect_local_version( Extension $extension ): void {
+		if ( $extension->from !== 'local' || $extension->version !== 'undefined' || empty( $extension->entrypoint ) ) {
+			return;
+		}
+
+		$header = $this->read_entrypoint_header( $extension );
+
+		if ( $header === null ) {
+			debug_log( "  Could not read {$extension->entrypoint} to find the version of {$extension->slug}", 'warning' );
+
+			return;
+		}
+
+		// Same line endings, pattern and cleanup as WordPress' get_file_data().
+		if ( ! preg_match( '/^(?:[ \t]*<\?php)?[ \t\/*#@]*Version:(.*)$/mi', str_replace( "\r", "\n", $header ), $matches ) ) {
+			debug_log( "  No Version header in {$extension->entrypoint}", 'warning' );
+
+			return;
+		}
+
+		$version = trim( (string) preg_replace( '/\s*(?:\*\/|\?>).*/', '', $matches[1] ) );
+
+		if ( $version !== '' ) {
+			$extension->version = $version;
+			debug_log( "  Found {$extension->type} version in header: $version" );
+		}
+	}
+
+	/**
+	 * The first 8 KB of the entrypoint, where WordPress reads headers.
+	 */
+	protected function read_entrypoint_header( Extension $extension ): ?string {
+		if ( is_dir( $extension->downloaded_source ) ) {
+			// The entrypoint is "<slug>/<file>"; the directory is the extension's own folder.
+			$path    = $extension->downloaded_source . '/' . basename( $extension->entrypoint );
+			$content = is_readable( $path ) ? file_get_contents( $path, false, null, 0, 8192 ) : false;
+
+			return $content === false ? null : $content;
+		}
+
+		$zip = new \ZipArchive();
+
+		if ( $zip->open( $extension->downloaded_source ) !== true ) {
+			return null;
+		}
+
+		try {
+			$content = $zip->getFromName( $extension->entrypoint, 8192 );
+		} finally {
+			$zip->close();
+		}
+
+		return $content === false ? null : $content;
 	}
 
 	/**
