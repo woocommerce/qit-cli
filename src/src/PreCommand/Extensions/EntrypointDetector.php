@@ -102,11 +102,8 @@ class EntrypointDetector {
 			return null;
 		}
 
-		try {
-			$content = $zip->getFromName( $extension->entrypoint, 8192 );
-		} finally {
-			$zip->close();
-		}
+		$content = $zip->getFromName( $extension->entrypoint, 8192 );
+		$zip->close();
 
 		return $content === false ? null : $content;
 	}
