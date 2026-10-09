@@ -12,6 +12,8 @@ try {
 	require_once __DIR__ . '/vendor/autoload.php';
 	require_once __DIR__ . '/src/helpers.php';
 
+	$is_mcp_mode = \QIT_CLI\is_mcp_command_argv( $_SERVER['argv'] ?? [] );
+
 	// Normalize option aliases in argv before Symfony Console processes them.
 	// Long forms are canonical (--php_version, --wordpress_version, --woocommerce_version).
 	// Short forms (--php, --wp, --woo) are user-friendly aliases that get normalized to long forms.
@@ -77,7 +79,12 @@ try {
 
 	// Handle CLI request.
 	exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-} catch ( \Exception $e ) {
+} catch ( \Throwable $e ) {
+	if ( ! empty( $is_mcp_mode ) ) {
+		fwrite( STDERR, $e->getMessage() . "\n" );
+		exit( 1 );
+	}
+
 	$io = new SymfonyStyle( App::make( \QIT_CLI\IO\Input::class ), App::make( Output::class ) );
 	$io->error( $e->getMessage() );
 	exit( 1 );
