@@ -36,6 +36,13 @@ class RequestBuilder {
 	/** @var int */
 	protected $retry_429 = 5;
 
+	/**
+	 * Default number of 429 retries and the longest single wait (seconds) we will
+	 * back off for. Shared between the API request path and the ZIP download path.
+	 */
+	protected const MAX_429_RETRIES      = 5;
+	protected const MAX_429_WAIT_SECONDS = 180;
+
 	/** @var int */
 	protected $timeout_in_seconds = 30;
 
@@ -175,6 +182,12 @@ class RequestBuilder {
 	}
 
 	public function request(): string {
+		// The 429 retry budget is per HTTP request. Reset it on entry so a reused builder
+		// (e.g. the same instance uploading every chunk in Upload.php) does not carry an
+		// exhausted budget from earlier chunks into later, otherwise-fresh requests. The
+		// reset is before the retry label so retries within this call still count down.
+		$this->retry_429 = static::MAX_429_RETRIES;
+
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 
 		// Apply rate limiting before making the request
@@ -374,12 +387,33 @@ class RequestBuilder {
 				$error_message = $body;
 				$json_response = json_decode( $error_message, true );
 
-				if ( is_array( $json_response ) && array_key_exists( 'message', $json_response ) ) {
-					$error_message = $json_response['message'];
+				// Prefer a structured error message. WordPress REST errors use `message`;
+				// our Manager rate-limit responses use `error`.
+				if ( is_array( $json_response ) ) {
+					if ( array_key_exists( 'message', $json_response ) ) {
+						$error_message = $json_response['message'];
+					} elseif ( array_key_exists( 'error', $json_response ) ) {
+						$error_message = $json_response['error'];
+					}
 				}
 			}
 
 			if ( $response_status_code === 429 ) {
+				// If the server asked us to wait longer than we are willing to back off for,
+				// there is no point burning through capped retries that are guaranteed to 429
+				// again. Fail immediately with clear, actionable guidance instead.
+				$retry_after_header = self::parse_retry_after_header( $headers );
+				if ( ! is_null( $retry_after_header ) && $retry_after_header > static::MAX_429_WAIT_SECONDS ) {
+					throw new NetworkErrorException(
+						sprintf(
+							'Rate limited by the server. Please wait about %d seconds (~%d minutes) and try again.',
+							$retry_after_header,
+							(int) ceil( $retry_after_header / 60 )
+						),
+						$response_status_code
+					);
+				}
+
 				if ( $this->retry_429 > 0 ) {
 					--$this->retry_429;
 					$sleep_seconds = $this->wait_after_429( $headers );
@@ -466,7 +500,7 @@ class RequestBuilder {
 				}
 
 				$mock_status = isset( $mocked['status'] ) ? (int) $mocked['status'] : 200;
-				self::assert_download_succeeded( $mock_status, $url, $file_path, $mocked['effective_url'] ?? null );
+				self::finalize_download( $mock_status, $url, $file_path, $mocked['effective_url'] ?? null );
 
 				if ( $output->isVerbose() ) {
 					$output->writeln( "Used mock response for $url, written to $file_path" );
@@ -523,11 +557,19 @@ class RequestBuilder {
 			);
 		}
 
+		$attempt = 0;
+
+		download_attempt: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+
 		// Open file for writing, create it if it doesn't exist.
 		$fp = fopen( $file_path, 'w' );
 		if ( $fp === false ) {
 			throw new \RuntimeException( 'Could not open file for writing: ' . $file_path );
 		}
+
+		// Capture response headers separately so the error body (e.g. a 429 HTML page)
+		// is not mixed into the file we stream to disk, and so we can read Retry-After.
+		$response_headers = '';
 
 		$curl = curl_init();
 
@@ -536,6 +578,11 @@ class RequestBuilder {
 			CURLOPT_RETURNTRANSFER => false, // Directly write the output.
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_FILE           => $fp,   // Write the output to the file.
+			CURLOPT_HEADERFUNCTION => static function ( $ch, string $header_line ) use ( &$response_headers ): int {
+				$response_headers .= $header_line;
+
+				return strlen( $header_line );
+			},
 		];
 
 		try {
@@ -572,7 +619,61 @@ class RequestBuilder {
 			throw new \RuntimeException( 'Curl ' . $curl_error );
 		}
 
+		// The artifact ZIPs are served as static files behind the platform edge, which
+		// rate-limits with a 429 (an HTML page) rather than our JSON limiter. Retry with
+		// backoff instead of hard-failing on the first throttle.
+		if ( $http_code === 429 && $attempt < static::MAX_429_RETRIES ) {
+			$retry_after_header = self::parse_retry_after_header( $response_headers );
+
+			// Only retry when the wait is within our budget; a longer window is handled as a
+			// clean failure by finalize_download() below.
+			if ( is_null( $retry_after_header ) || $retry_after_header <= static::MAX_429_WAIT_SECONDS ) {
+				// Remove the partial error page before retrying.
+				self::delete_download_file( $file_path );
+
+				$delay = self::calculate_retry_delay( $retry_after_header, $attempt, static::MAX_429_WAIT_SECONDS );
+				++$attempt;
+
+				if ( $output->isVerbose() ) {
+					$output->writeln( sprintf(
+						'<comment>Download rate limited (429). Waiting %d seconds and retrying (%d/%d)...</comment>',
+						$delay,
+						$attempt,
+						static::MAX_429_RETRIES
+					) );
+				}
+
+				sleep( $delay );
+				goto download_attempt; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+			}
+		}
+
+		self::finalize_download( $http_code, $url, $file_path, $effective_url );
+	}
+
+	/**
+	 * Validate a completed download, translating a 429 into a clean rate-limit message
+	 * (never leaking the raw HTML error page) and deferring all other statuses to
+	 * assert_download_succeeded().
+	 */
+	protected static function finalize_download( int $http_code, string $url, string $file_path, ?string $effective_url = null ): void {
+		if ( $http_code === 429 ) {
+			self::delete_download_file( $file_path );
+			throw new \RuntimeException( self::download_rate_limited_message( $effective_url ?: $url ) );
+		}
+
 		self::assert_download_succeeded( $http_code, $url, $file_path, $effective_url );
+	}
+
+	/**
+	 * A user-facing message for a rate-limited download. Deliberately omits the response
+	 * body so a 429 HTML page never ends up in the CLI output.
+	 */
+	protected static function download_rate_limited_message( string $url ): string {
+		return sprintf(
+			'Download failed: rate limited (HTTP 429) for %s. Too many requests — please wait a few minutes and try again.',
+			self::sanitize_download_url_for_logs( $url )
+		);
 	}
 
 	/**
@@ -649,66 +750,87 @@ class RequestBuilder {
 		}
 	}
 
-	protected function wait_after_429( string $headers, int $max_wait = 180 ): int {
+	protected function wait_after_429( string $headers, int $max_wait = self::MAX_429_WAIT_SECONDS ): int {
+		$retry_after_header = self::parse_retry_after_header( $headers );
+
+		// Attempt number is derived from how many 429 retries we have consumed so far,
+		// so the exponential fallback grows as the counter is decremented (0-based).
+		$attempt = static::MAX_429_RETRIES - $this->retry_429;
+
+		return self::calculate_retry_delay( $retry_after_header, $attempt, $max_wait );
+	}
+
+	/**
+	 * Parse the server-provided Retry-After header into seconds.
+	 *
+	 * @param string $headers Raw response headers.
+	 *
+	 * @return int|null Seconds the server asked us to wait, or null if not provided/parseable.
+	 *                  Never negative (a past date clamps to 0).
+	 */
+	protected static function parse_retry_after_header( string $headers ): ?int {
 		$retry_after = null;
-
-		// HTTP dates are always expressed in GMT, never in local time. (RFC 9110 5.6.7).
-		$gmt_timezone = new \DateTimeZone( 'GMT' );
-
-		// HTTP headers are case-insensitive according to RFC 7230.
-		$headers = strtolower( $headers );
 
 		foreach ( explode( "\r\n", $headers ) as $header ) {
 			/**
-			 * Retry-After header is specified by RFC 9110 10.2.3
-			 *
-			 * It can be formatted as http-date, or int (seconds).
+			 * Retry-After is specified by RFC 9110 10.2.3 and can be an int (seconds) or an
+			 * HTTP-date. Header names are case-insensitive (RFC 7230), so match with stripos
+			 * anchored at the start of the line.
 			 *
 			 * Retry-After: Fri, 31 Dec 1999 23:59:59 GMT
 			 * Retry-After: 120
 			 *
 			 * @link https://datatracker.ietf.org/doc/html/rfc9110#section-10.2.3
 			 */
-			if ( strpos( $header, 'retry-after:' ) !== false ) {
-				$retry_after_header = trim( substr( $header, strpos( $header, ':' ) + 1 ) );
+			if ( stripos( $header, 'retry-after:' ) !== 0 ) {
+				continue;
+			}
 
-				// seconds.
-				if ( is_numeric( $retry_after_header ) ) {
-					$retry_after = intval( $retry_after_header );
-				} else {
-					// Parse as HTTP-date in GMT timezone.
-					try {
-						$retry_after = ( new \DateTime( $retry_after_header, $gmt_timezone ) )->getTimestamp() - ( new \DateTime( 'now', $gmt_timezone ) )->getTimestamp();
-					} catch ( \Exception $e ) {
-						$retry_after = null;
-					}
-					// http-date.
-					$retry_after_time = strtotime( $retry_after_header );
-					if ( $retry_after_time !== false ) {
-						$retry_after = $retry_after_time - time();
-					}
-				}
+			$value = trim( substr( $header, strpos( $header, ':' ) + 1 ) );
+			if ( $value === '' ) {
+				continue;
+			}
 
-				if ( ! defined( 'UNIT_TESTS' ) ) {
-					App::make( Output::class )->writeln( sprintf( 'Got 429. Retrying after %d seconds...', $retry_after ) );
+			if ( is_numeric( $value ) ) {
+				$retry_after = (int) $value;
+			} else {
+				// strtotime honors the timezone embedded in an HTTP-date (always GMT),
+				// so the delta against time() is correct regardless of local timezone.
+				$retry_after_time = strtotime( $value );
+				if ( $retry_after_time !== false ) {
+					$retry_after = $retry_after_time - time();
 				}
 			}
 		}
 
-		// If no retry-after is specified, do a back-off.
-		if ( is_null( $retry_after ) ) {
-			$retry_after = 5 * pow( 2, abs( $this->retry_429 - 5 ) );
+		if ( ! is_null( $retry_after ) && $retry_after < 0 ) {
+			$retry_after = 0;
 		}
 
-		// Ensure we wait at least 1 second.
-		$retry_after = max( 1, $retry_after );
-
-		// And no longer than 180 seconds.
-		$retry_after = min( $max_wait, $retry_after );
-
-		$retry_after += rand( 0, 5 ); // Add a random number of seconds to avoid all clients retrying at the same time.
-
 		return $retry_after;
+	}
+
+	/**
+	 * Compute how long to sleep before a 429 retry: honor the server's Retry-After when
+	 * present, otherwise exponential backoff. Always floored at 1s, capped at $max_wait,
+	 * and given 0-5s of jitter so parallel clients do not retry in lockstep.
+	 *
+	 * @param int|null $retry_after_header Server-requested seconds, or null for backoff.
+	 * @param int      $attempt            0-based retry attempt number.
+	 * @param int      $max_wait           Upper bound (seconds) on the returned delay.
+	 */
+	protected static function calculate_retry_delay( ?int $retry_after_header, int $attempt, int $max_wait = self::MAX_429_WAIT_SECONDS ): int {
+		if ( is_null( $retry_after_header ) ) {
+			$retry_after = 5 * pow( 2, max( 0, $attempt ) );
+		} else {
+			$retry_after = $retry_after_header;
+		}
+
+		$retry_after  = max( 1, $retry_after );
+		$retry_after  = min( $max_wait, $retry_after );
+		$retry_after += rand( 0, 5 );
+
+		return (int) $retry_after;
 	}
 
 	/**
