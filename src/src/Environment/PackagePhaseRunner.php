@@ -168,7 +168,8 @@ class PackagePhaseRunner {
 	 * Enables qit.actions('makePurchase') in the runtime.
 	 *
 	 * Scans all loaded test package manifests for "actions" declarations,
-	 * resolves relative paths to absolute host paths.
+	 * resolves relative paths to absolute host paths. Each package directory
+	 * is read once, so subpackages sharing a parent directory don't duplicate actions.
 	 *
 	 * @param EnvInfo $env_info Environment information.
 	 * @return string Absolute path to the generated actions-manifest.json.
@@ -178,10 +179,19 @@ class PackagePhaseRunner {
 			return $this->actions_manifest_path;
 		}
 
-		$actions = [];
+		$actions    = [];
+		$seen_paths = [];
 
 		foreach ( $env_info->test_packages_metadata as $package_id => $metadata ) {
-			$package_path  = $metadata['path'];
+			$package_path = $metadata['path'];
+
+			// Subpackages share their parent's directory; contribute its actions once.
+			$path_key = realpath( $package_path ) ?: $package_path;
+			if ( isset( $seen_paths[ $path_key ] ) ) {
+				continue;
+			}
+			$seen_paths[ $path_key ] = true;
+
 			$manifest_file = $package_path . '/qit-test.json';
 
 			if ( ! file_exists( $manifest_file ) ) {
