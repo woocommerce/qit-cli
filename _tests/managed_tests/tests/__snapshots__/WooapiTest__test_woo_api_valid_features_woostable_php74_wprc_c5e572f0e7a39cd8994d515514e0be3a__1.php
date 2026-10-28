@@ -47,10 +47,10 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_packages": [
-                "woocommerce\\/core-api-tests:latest"
+                "woocommerce\\/core-api-tests:11.2"
             ],
             "test_package_checksums": {
-                "woocommerce\\/core-api-tests:latest": "31e77c3be4d466b2c68865109ed25121d231d623371b46462c62f388d707bfd4"
+                "woocommerce\\/core-api-tests:11.2": "73d065dfc0e11f6ef78ccd7bfe61d89dbae093557ff3e9da11f98bfede94be94"
             },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
@@ -95,16 +95,16 @@
                     "tests": [
                         {
                             "name": "wp plugin activate woocommerce",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-0",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-0",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Plugin already activated.\\nWarning: Plugin \'woocommerce\' is already active.",
@@ -117,16 +117,16 @@
                         },
                         {
                             "name": "wp user create customer customer@woocommercecoree2etestsuite.com --user_pass=password --role=customer --first_name=Jane --last_name=Smith",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-1",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-1",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Created user 2.",
@@ -139,16 +139,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile_completed yes",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-2",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-2",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
@@ -161,16 +161,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_redirect_to_setup no",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-3",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-3",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
@@ -183,16 +183,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-4",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-4",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
@@ -205,16 +205,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_coming_soon no",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-5",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-5",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_coming_soon\' option.",
@@ -227,16 +227,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_store_pages_only no",
-                            "id": "woocommerce\\/core-api-tests:latest-globalSetup-6",
+                            "id": "woocommerce\\/core-api-tests:11.2-globalSetup-6",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-api-tests:latest",
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "package": "woocommerce\\/core-api-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-api-tests:latest",
+                                "packageId": "woocommerce\\/core-api-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
@@ -266,7 +266,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -296,7 +296,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -326,7 +326,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -356,7 +356,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -386,7 +386,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -416,7 +416,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -446,7 +446,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -476,7 +476,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -506,7 +506,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -536,7 +536,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -566,7 +566,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -596,7 +596,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -626,7 +626,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -656,7 +656,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -686,7 +686,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -716,7 +716,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -746,7 +746,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -776,7 +776,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -806,7 +806,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -836,7 +836,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -866,7 +866,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -896,7 +896,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -926,7 +926,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -956,7 +956,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -986,7 +986,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1016,7 +1016,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1046,7 +1046,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1076,7 +1076,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1106,7 +1106,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1136,7 +1136,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1166,7 +1166,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1196,7 +1196,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1226,7 +1226,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1259,13 +1259,13 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/83c3bae7a28e531b340e76cc3f3efbf4\\/tests\\/api-tests\\/data\\/data-crud.test.ts",
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/b99e37a2dd6b48b2d7352d350e7fa74d\\/tests\\/api-tests\\/data\\/data-crud.test.ts",
                                             "line": 3995,
                                             "column": 7
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1295,7 +1295,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1325,7 +1325,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1355,7 +1355,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1385,7 +1385,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1415,7 +1415,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1445,7 +1445,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1475,7 +1475,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1505,7 +1505,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1535,7 +1535,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1565,7 +1565,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1595,7 +1595,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1625,7 +1625,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1655,7 +1655,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1685,7 +1685,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1715,7 +1715,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1745,7 +1745,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1775,7 +1775,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1805,7 +1805,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1835,7 +1835,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1865,7 +1865,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1895,7 +1895,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1925,7 +1925,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1955,7 +1955,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -1985,7 +1985,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2015,7 +2015,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2045,7 +2045,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2075,7 +2075,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2105,7 +2105,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2135,7 +2135,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2165,7 +2165,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2195,7 +2195,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2225,7 +2225,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2255,7 +2255,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2285,7 +2285,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2315,7 +2315,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2345,7 +2345,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2375,7 +2375,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2405,7 +2405,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2435,7 +2435,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2465,7 +2465,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2495,7 +2495,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2525,7 +2525,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2555,7 +2555,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2585,7 +2585,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2615,7 +2615,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2645,7 +2645,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2675,7 +2675,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2705,7 +2705,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2735,7 +2735,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2765,7 +2765,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2795,7 +2795,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2825,7 +2825,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2855,7 +2855,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2885,7 +2885,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2915,7 +2915,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2945,7 +2945,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -2975,7 +2975,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3005,7 +3005,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3035,7 +3035,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3065,7 +3065,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3095,7 +3095,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3125,7 +3125,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3155,7 +3155,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3185,7 +3185,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3215,7 +3215,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3245,7 +3245,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3275,7 +3275,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3305,7 +3305,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3335,7 +3335,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3365,7 +3365,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3395,7 +3395,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3425,7 +3425,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3455,7 +3455,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3485,7 +3485,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3515,7 +3515,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3545,7 +3545,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3575,7 +3575,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3605,7 +3605,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3635,7 +3635,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3665,7 +3665,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3695,7 +3695,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3725,7 +3725,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3755,7 +3755,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3785,7 +3785,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3815,7 +3815,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3845,7 +3845,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3875,7 +3875,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3905,7 +3905,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3935,7 +3935,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3965,7 +3965,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -3995,7 +3995,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4025,7 +4025,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4058,13 +4058,13 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/83c3bae7a28e531b340e76cc3f3efbf4\\/tests\\/api-tests\\/products\\/product-list.test.ts",
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/b99e37a2dd6b48b2d7352d350e7fa74d\\/tests\\/api-tests\\/products\\/product-list.test.ts",
                                             "line": 3279,
                                             "column": 9
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4097,13 +4097,13 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/83c3bae7a28e531b340e76cc3f3efbf4\\/tests\\/api-tests\\/products\\/product-list.test.ts",
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/b99e37a2dd6b48b2d7352d350e7fa74d\\/tests\\/api-tests\\/products\\/product-list.test.ts",
                                             "line": 3299,
                                             "column": 9
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4133,7 +4133,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4163,7 +4163,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4193,7 +4193,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4223,7 +4223,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4253,7 +4253,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4283,7 +4283,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4313,7 +4313,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4343,7 +4343,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4373,7 +4373,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4403,7 +4403,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4433,7 +4433,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4463,7 +4463,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4493,7 +4493,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4523,7 +4523,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4553,7 +4553,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4583,7 +4583,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4613,7 +4613,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4643,7 +4643,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4673,7 +4673,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4703,7 +4703,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4733,7 +4733,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4763,7 +4763,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4793,7 +4793,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4823,7 +4823,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4853,7 +4853,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4883,7 +4883,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4913,7 +4913,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4943,7 +4943,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -4973,7 +4973,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5003,7 +5003,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5033,7 +5033,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5063,7 +5063,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5093,7 +5093,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5123,7 +5123,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5153,7 +5153,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5183,7 +5183,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5213,7 +5213,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5243,7 +5243,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5273,7 +5273,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5303,7 +5303,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5333,7 +5333,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5363,7 +5363,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5393,7 +5393,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5423,7 +5423,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5453,7 +5453,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5483,7 +5483,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5513,7 +5513,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5543,7 +5543,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5573,7 +5573,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5603,7 +5603,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5633,7 +5633,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5663,7 +5663,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5693,7 +5693,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5723,7 +5723,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5753,7 +5753,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5783,7 +5783,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5813,7 +5813,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5843,7 +5843,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5873,7 +5873,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5903,7 +5903,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5933,7 +5933,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5963,7 +5963,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -5993,7 +5993,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6023,7 +6023,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6053,7 +6053,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6083,7 +6083,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6113,7 +6113,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6143,7 +6143,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6173,7 +6173,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6203,7 +6203,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6233,7 +6233,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6263,7 +6263,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6293,7 +6293,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6323,7 +6323,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6353,7 +6353,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6383,7 +6383,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6413,7 +6413,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6446,13 +6446,13 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/83c3bae7a28e531b340e76cc3f3efbf4\\/tests\\/api-tests\\/settings\\/settings-crud.test.ts",
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/b99e37a2dd6b48b2d7352d350e7fa74d\\/tests\\/api-tests\\/settings\\/settings-crud.test.ts",
                                             "line": 1562,
                                             "column": 8
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6482,7 +6482,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6515,7 +6515,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6548,7 +6548,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6578,7 +6578,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6608,7 +6608,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6638,7 +6638,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6668,7 +6668,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6698,7 +6698,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6728,7 +6728,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6758,7 +6758,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6788,7 +6788,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6818,7 +6818,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6848,7 +6848,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6878,7 +6878,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6908,7 +6908,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6938,7 +6938,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6968,7 +6968,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -6998,7 +6998,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7028,7 +7028,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7058,7 +7058,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7088,7 +7088,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7118,7 +7118,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7148,7 +7148,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7178,7 +7178,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7208,7 +7208,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7238,7 +7238,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7268,7 +7268,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7298,7 +7298,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7328,7 +7328,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7463,7 +7463,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7493,7 +7493,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7523,7 +7523,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7553,7 +7553,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7583,7 +7583,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7613,7 +7613,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7643,7 +7643,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7673,7 +7673,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7703,7 +7703,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7733,7 +7733,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7763,7 +7763,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7793,7 +7793,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7823,7 +7823,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7853,7 +7853,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7883,7 +7883,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7913,7 +7913,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7943,7 +7943,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -7973,7 +7973,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8003,7 +8003,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8033,7 +8033,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8063,7 +8063,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8093,7 +8093,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8123,7 +8123,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8153,7 +8153,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8183,7 +8183,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8213,7 +8213,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8243,7 +8243,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-api-tests:latest",
+                                "packageSlug": "woocommerce\\/core-api-tests:11.2",
                                 "phase": "run",
                                 "testType": "api",
                                 "namespace": "woocommerce",
@@ -8260,7 +8260,7 @@
                             "version": "1.0.0",
                             "packages": [
                                 {
-                                    "packageId": "woocommerce\\/core-api-tests:latest",
+                                    "packageId": "woocommerce\\/core-api-tests:11.2",
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
@@ -8285,7 +8285,7 @@
                                     "packagesWithBlob": 0,
                                     "totalPackagesWithTests": 1,
                                     "missingFrom": [
-                                        "core-api-tests:latest"
+                                        "core-api-tests:11.2"
                                     ]
                                 },
                                 "allure": {

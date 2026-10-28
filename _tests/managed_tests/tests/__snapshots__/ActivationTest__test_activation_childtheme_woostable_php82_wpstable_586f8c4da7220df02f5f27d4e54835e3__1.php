@@ -36,8 +36,8 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 18 total, 13 passed, 1 failed, 4 skipped",
-            "version": "undefined",
+            "test_summary": "Tests: 19 total, 13 passed, 1 failed, 5 skipped",
+            "version": "1.0.15",
             "update_complete": true,
             "malware_whitelist_paths": [],
             "workflow_id": "",
@@ -47,10 +47,10 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_packages": [
-                "woocommerce\\/activation:11.1"
+                "woocommerce\\/activation:11.2"
             ],
             "test_package_checksums": {
-                "woocommerce\\/activation:11.1": "b2d8fb32127d915840e0cedede19e13c7f44c43101246e50418596cccf550f58"
+                "woocommerce\\/activation:11.2": "6434e16605b566128825eca8a5a1a3d25b95996b2c9cfe3fa2286f9fb2faa7bf"
             },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
@@ -83,10 +83,10 @@
                         }
                     },
                     "summary": {
-                        "tests": 18,
+                        "tests": 19,
                         "passed": 13,
                         "failed": 1,
-                        "skipped": 4,
+                        "skipped": 5,
                         "pending": 0,
                         "other": 0,
                         "start": 1111111111,
@@ -95,16 +95,16 @@
                     "tests": [
                         {
                             "name": "wp plugin activate woocommerce",
-                            "id": "woocommerce\\/activation:11.1-globalSetup-0",
+                            "id": "woocommerce\\/activation:11.2-globalSetup-0",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:11.1",
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "package": "woocommerce\\/activation:11.2",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:11.1",
+                                "packageId": "woocommerce\\/activation:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Plugin \'woocommerce\' activated.\\nSuccess: Activated 1 of 1 plugins.",
@@ -117,16 +117,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile_completed yes",
-                            "id": "woocommerce\\/activation:11.1-globalSetup-1",
+                            "id": "woocommerce\\/activation:11.2-globalSetup-1",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:11.1",
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "package": "woocommerce\\/activation:11.2",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:11.1",
+                                "packageId": "woocommerce\\/activation:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
@@ -139,16 +139,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_redirect_to_setup no",
-                            "id": "woocommerce\\/activation:11.1-globalSetup-2",
+                            "id": "woocommerce\\/activation:11.2-globalSetup-2",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:11.1",
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "package": "woocommerce\\/activation:11.2",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:11.1",
+                                "packageId": "woocommerce\\/activation:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
@@ -161,16 +161,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
-                            "id": "woocommerce\\/activation:11.1-globalSetup-3",
+                            "id": "woocommerce\\/activation:11.2-globalSetup-3",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:11.1",
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "package": "woocommerce\\/activation:11.2",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:11.1",
+                                "packageId": "woocommerce\\/activation:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
@@ -183,16 +183,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_coming_soon no",
-                            "id": "woocommerce\\/activation:11.1-globalSetup-4",
+                            "id": "woocommerce\\/activation:11.2-globalSetup-4",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:11.1",
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "package": "woocommerce\\/activation:11.2",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:11.1",
+                                "packageId": "woocommerce\\/activation:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_coming_soon\' option.",
@@ -205,16 +205,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_store_pages_only no",
-                            "id": "woocommerce\\/activation:11.1-globalSetup-5",
+                            "id": "woocommerce\\/activation:11.2-globalSetup-5",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:11.1",
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "package": "woocommerce\\/activation:11.2",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:11.1",
+                                "packageId": "woocommerce\\/activation:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
@@ -244,7 +244,47 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Record request footprint",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "chromium > activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "The request footprint is measured across plugin activation only.",
+                                        "location": {
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a780063a0ffc590d9ad5f2a1c8884f93\\/tests\\/activation.spec.js",
+                                            "line": 364,
+                                            "column": 10
+                                        }
+                                    }
+                                ],
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -278,13 +318,13 @@
                                         "type": "skip",
                                         "description": "The release-smoke hook resilience check currently supports plugin SUTs only.",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/tests\\/activation.spec.js",
-                                            "line": 315,
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a780063a0ffc590d9ad5f2a1c8884f93\\/tests\\/activation.spec.js",
+                                            "line": 383,
                                             "column": 10
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -314,7 +354,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -347,7 +387,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -377,7 +417,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -411,7 +451,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -441,7 +481,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -474,13 +514,13 @@
                                     {
                                         "type": "slow",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/tests\\/activation.spec.js",
-                                            "line": 863,
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a780063a0ffc590d9ad5f2a1c8884f93\\/tests\\/activation.spec.js",
+                                            "line": 927,
                                             "column": 10
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -498,8 +538,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/tests\\/activation.spec.js:980:69",
-                            "snippet": "  978 |\\n  979 |     await page.goto(\'\\/cart\');\\n> 980 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  981 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  982 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  983 | });",
+                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a780063a0ffc590d9ad5f2a1c8884f93\\/tests\\/activation.spec.js:1041:69",
+                            "snippet": "\\u001b[0m \\u001b[90m 1039 |\\u001b[39m\\n \\u001b[90m 1040 |\\u001b[39m     \\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgoto(\\u001b[32m\'\\/cart\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 1041 |\\u001b[39m     \\u001b[36mawait\\u001b[39m expect(page\\u001b[33m.\\u001b[39mlocator(\\u001b[32m\'.wc-block-components-product-name\'\\u001b[39m))\\u001b[33m.\\u001b[39mtoContainText(\\u001b[32m\'Test Product\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m      |\\u001b[39m                                                                     \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 1042 |\\u001b[39m     \\u001b[36mawait\\u001b[39m expect(page\\u001b[33m.\\u001b[39mlocator(\\u001b[32m\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\'\\u001b[39m))\\u001b[33m.\\u001b[39mtoContainText(\\u001b[32m\'$10.00\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 1043 |\\u001b[39m     \\u001b[36mawait\\u001b[39m expect(page\\u001b[33m.\\u001b[39mlocator(\\u001b[32m\'.wc-block-components-totals-item__value > span\'\\u001b[39m))\\u001b[33m.\\u001b[39mtoContainText(\\u001b[32m\'$10.00\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 1044 |\\u001b[39m })\\u001b[33m;\\u001b[39m\\u001b[0m",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -534,7 +574,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -564,7 +604,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -594,7 +634,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -624,7 +664,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -641,11 +681,11 @@
                             "version": "1.0.0",
                             "packages": [
                                 {
-                                    "packageId": "woocommerce\\/activation:11.1",
+                                    "packageId": "woocommerce\\/activation:11.2",
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
-                                    "testCount": 12,
+                                    "testCount": 13,
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,

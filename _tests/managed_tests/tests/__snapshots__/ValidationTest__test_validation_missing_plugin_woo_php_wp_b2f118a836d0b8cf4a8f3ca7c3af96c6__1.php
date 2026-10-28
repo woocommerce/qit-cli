@@ -71,7 +71,12 @@
                     ]
                 },
                 "has_outdated_templates": false,
-                "has_readme": false
+                "has_readme": false,
+                "parent_item_key": {
+                    "uses_filter": false,
+                    "matches": [],
+                    "truncated": false
+                }
             }
         }
     ]

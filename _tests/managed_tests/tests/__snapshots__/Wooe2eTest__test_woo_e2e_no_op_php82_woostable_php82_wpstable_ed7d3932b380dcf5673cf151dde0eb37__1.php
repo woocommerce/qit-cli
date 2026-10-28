@@ -36,7 +36,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 126 total, 123 passed, 0 failed, 3 skipped",
+            "test_summary": "Tests: 119 total, 118 passed, 0 failed, 1 skipped",
             "version": "undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -47,10 +47,10 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_packages": [
-                "woocommerce\\/core-e2e-tests:11.1"
+                "woocommerce\\/core-e2e-tests:11.2"
             ],
             "test_package_checksums": {
-                "woocommerce\\/core-e2e-tests:11.1": "12e13909de8c7e838552ea28eafdb0b167092a1ef406717b483e9ac8098ab351"
+                "woocommerce\\/core-e2e-tests:11.2": "cdfe0135005ef3124a29fce0a6b055838aad76a1a0642f2758f2fe2fa9b64dda"
             },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
@@ -83,10 +83,10 @@
                         }
                     },
                     "summary": {
-                        "tests": 126,
-                        "passed": 123,
+                        "tests": 119,
+                        "passed": 118,
                         "failed": 0,
-                        "skipped": 3,
+                        "skipped": 1,
                         "pending": 0,
                         "other": 0,
                         "start": 1111111111,
@@ -95,16 +95,16 @@
                     "tests": [
                         {
                             "name": "wp plugin activate woocommerce",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-0",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-0",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Plugin already activated.\\nWarning: Plugin \'woocommerce\' is already active.",
@@ -117,16 +117,16 @@
                         },
                         {
                             "name": "wp theme install twentytwentythree --activate",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-1",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-1",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Installing Twenty Twenty-Three (1.7)\\nDownloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentythree.1.7.zip...\\nUsing cached file \'\\/qit\\/cache\\/wp-cli\\/theme\\/twentytwentythree-1.7.zip\'...\\nUnpacking the package...\\nInstalling the theme...\\nTheme installed successfully.\\nActivating \'twentytwentythree\'...\\nSuccess: Switched to \'Twenty Twenty-Three\' theme.\\nSuccess: Installed 1 of 1 themes.",
@@ -139,16 +139,16 @@
                         },
                         {
                             "name": "wp rewrite structure \'\\/%postname%\\/\' --hard",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-2",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-2",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Rewrite structure set.\\nWarning: Regenerating a .htaccess file requires special configuration. See usage docs.\\nWarning: Regenerating a .htaccess file requires special configuration. See usage docs.\\nSuccess: Rewrite rules flushed.",
@@ -161,16 +161,16 @@
                         },
                         {
                             "name": "wp user create customer customer@woocommercecoree2etestsuite.com --user_pass=password --role=customer --first_name=Jane --last_name=Smith",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-3",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-3",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Created user 2.",
@@ -183,16 +183,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile_completed yes",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-4",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-4",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
@@ -205,16 +205,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_redirect_to_setup no",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-5",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-5",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
@@ -227,16 +227,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-6",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-6",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
@@ -249,16 +249,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_coming_soon no",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-7",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-7",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_coming_soon\' option.",
@@ -271,16 +271,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_store_pages_only no",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-8",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-8",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
@@ -293,16 +293,16 @@
                         },
                         {
                             "name": "wp option update blogname \'WooCommerce Core E2E Test Suite\'",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-9",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-9",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'blogname\' option.",
@@ -315,16 +315,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_enable_ajax_add_to_cart yes",
-                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-10",
+                            "id": "woocommerce\\/core-e2e-tests:11.2-globalSetup-10",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:11.1",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "package": "woocommerce\\/core-e2e-tests:11.2",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Value passed for \'woocommerce_enable_ajax_add_to_cart\' option is unchanged.",
@@ -360,13 +360,13 @@
                                         "type": "skip",
                                         "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found.",
                                         "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/01817ecfff68e84a9b0ea8db7aab95fa\\/fixtures\\/install-wc.setup.ts",
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/2be3ef54c0f64896af405ca6f63b8831\\/fixtures\\/install-wc.setup.ts",
                                             "line": 23,
                                             "column": 8
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -407,7 +407,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -486,7 +486,7 @@
                             ],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -522,7 +522,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -571,7 +571,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -628,7 +628,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -693,7 +693,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -758,7 +758,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -794,7 +794,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -830,7 +830,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -866,7 +866,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -902,7 +902,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -938,7 +938,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -974,7 +974,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1010,7 +1010,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1046,7 +1046,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1082,7 +1082,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1118,7 +1118,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1153,7 +1153,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1189,7 +1189,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1225,7 +1225,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1270,7 +1270,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1315,7 +1315,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1351,7 +1351,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1398,7 +1398,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1451,7 +1451,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1492,7 +1492,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1545,7 +1545,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1577,7 +1577,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1609,7 +1609,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1641,7 +1641,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1673,7 +1673,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1709,7 +1709,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1744,7 +1744,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1756,12 +1756,12 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can add a product using the keyboard without a rogue search box",
-                            "status": "skipped",
+                            "name": "can add a product without an extra click or rogue search box",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -1778,17 +1778,8 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/01817ecfff68e84a9b0ea8db7aab95fa\\/tests\\/order\\/create-order.spec.ts",
-                                            "line": 428,
-                                            "column": 8
-                                        }
-                                    }
-                                ],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1823,7 +1814,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1858,7 +1849,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1893,7 +1884,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1928,7 +1919,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1963,7 +1954,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1998,7 +1989,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2033,7 +2024,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2068,7 +2059,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2103,7 +2094,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2138,7 +2129,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2173,7 +2164,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2208,7 +2199,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2256,7 +2247,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2308,7 +2299,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2343,7 +2334,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2378,7 +2369,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2413,7 +2404,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2448,7 +2439,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2483,7 +2474,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2519,7 +2510,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2555,7 +2546,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2590,7 +2581,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2625,7 +2616,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2661,75 +2652,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by All",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by Pending payment",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2763,177 +2686,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by On hold",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by Completed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by Cancelled",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by Refunded",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should filter by Failed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3016,7 +2769,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3095,7 +2848,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3174,7 +2927,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3249,7 +3002,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3294,7 +3047,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3339,7 +3092,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3384,7 +3137,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3437,7 +3190,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3494,7 +3247,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3553,7 +3306,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3596,7 +3349,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3639,7 +3392,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3674,7 +3427,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3709,7 +3462,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3741,7 +3494,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3773,7 +3526,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3805,7 +3558,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3837,7 +3590,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3869,7 +3622,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3901,7 +3654,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3933,7 +3686,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3965,7 +3718,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3997,7 +3750,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4029,7 +3782,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4061,7 +3814,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4093,7 +3846,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4142,7 +3895,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4178,7 +3931,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4212,7 +3965,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4244,7 +3997,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4276,7 +4029,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4308,7 +4061,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4340,7 +4093,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4372,7 +4125,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4407,7 +4160,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4442,7 +4195,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4476,7 +4229,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4510,7 +4263,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4544,7 +4297,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4576,7 +4329,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4608,7 +4361,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4621,11 +4374,11 @@
                         },
                         {
                             "name": "saves an unsaved shipping zone when adding a method",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shipping-zones.spec.ts",
@@ -4639,17 +4392,8 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/01817ecfff68e84a9b0ea8db7aab95fa\\/tests\\/shipping\\/shipping-zones.spec.ts",
-                                            "line": 128,
-                                            "column": 6
-                                        }
-                                    }
-                                ],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4685,7 +4429,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4721,7 +4465,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4761,7 +4505,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4805,7 +4549,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4849,7 +4593,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4883,7 +4627,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.2",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4900,11 +4644,11 @@
                             "version": "1.0.0",
                             "packages": [
                                 {
-                                    "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                    "packageId": "woocommerce\\/core-e2e-tests:11.2",
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
-                                    "testCount": 115,
+                                    "testCount": 108,
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,
@@ -4925,7 +4669,7 @@
                                     "packagesWithBlob": 0,
                                     "totalPackagesWithTests": 1,
                                     "missingFrom": [
-                                        "core-e2e-tests:11.1"
+                                        "core-e2e-tests:11.2"
                                     ]
                                 },
                                 "allure": {

@@ -11,8 +11,11 @@
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
-            "additional_wp_plugins": [],
+            "additional_wp_plugins": [
+                "woocommerce"
+            ],
             "test_log": "",
+            "test_result_json": "",
             "performance_results": "",
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -26,7 +29,7 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "cli_development_extension_test",
+            "event": "local_or_ci_run_normalized",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
@@ -34,24 +37,39 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Delete_Products Normalized Summary",
-            "version": "Undefined",
+            "version": "undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
-            "workflow_id": "1234567890",
-            "runner": "normalized",
+            "workflow_id": "",
+            "runner": "",
             "test_media": [],
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_packages": [],
+            "test_packages": [
+                "woocommerce\\/core-api-tests:11.3"
+            ],
+            "test_package_checksums": {
+                "woocommerce\\/core-api-tests:11.3": "824226fd5603f63768c7dbf4b171bf23d7824b7540577d612c1144d49c81c6c2"
+            },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
-            "test_result_json_extracted": "{EXTRACTED}",
+            "validation_policy_version": "",
+            "extension_specs": [
+                {
+                    "slug": "woocommerce",
+                    "woo_product_id": null,
+                    "type": "plugin",
+                    "source": "url",
+                    "requested_version": "rc",
+                    "resolved_version": "normalized",
+                    "artifact_ref": [],
+                    "role": "integration",
+                    "reason": "local environment additional plugin"
+                }
+            ],
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
-        },
-        {
-            "test_result_json": []
         },
         {
             "ctrf_json": []

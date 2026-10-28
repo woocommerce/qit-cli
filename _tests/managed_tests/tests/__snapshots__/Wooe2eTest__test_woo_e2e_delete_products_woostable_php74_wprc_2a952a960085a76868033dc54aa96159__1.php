@@ -47,10 +47,10 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_packages": [
-                "woocommerce\\/core-e2e-tests:11.1"
+                "woocommerce\\/core-e2e-tests:11.2"
             ],
             "test_package_checksums": {
-                "woocommerce\\/core-e2e-tests:11.1": "12e13909de8c7e838552ea28eafdb0b167092a1ef406717b483e9ac8098ab351"
+                "woocommerce\\/core-e2e-tests:11.2": "cdfe0135005ef3124a29fce0a6b055838aad76a1a0642f2758f2fe2fa9b64dda"
             },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
