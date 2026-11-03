@@ -242,6 +242,40 @@ function is_option_explicitly_provided( InputInterface $input, string $option_na
 }
 
 /**
+ * Detect whether the current argv targets the MCP command.
+ *
+ * @param array<int,string>|null $argv The argv array to inspect.
+ */
+function is_mcp_command_argv( ?array $argv ): bool {
+	if ( empty( $argv ) ) {
+		return false;
+	}
+
+	array_shift( $argv );
+
+	$count = count( $argv );
+	for ( $index = 0; $index < $count; $index++ ) {
+		$arg = $argv[ $index ];
+
+		if ( $arg === '' ) {
+			continue;
+		}
+
+		if ( strpos( $arg, '--' ) === 0 ) {
+			continue;
+		}
+
+		if ( strpos( $arg, '-' ) === 0 ) {
+			continue;
+		}
+
+		return $arg === 'mcp';
+	}
+
+	return false;
+}
+
+/**
  * Write debug output only when verbose mode is enabled
  *
  * @param string|array<string> $messages The message(s) to output.
