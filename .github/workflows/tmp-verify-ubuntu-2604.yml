@@ -1,0 +1,154 @@
+# TEMPORARY (QIT-1154): verifies host setup on Ubuntu 26.04 before ubuntu-latest moves there.
+# Delete this file before merging.
+name: TMP Verify Ubuntu 26.04
+
+on:
+  push:
+    branches:
+      - qit-1154-update-qit-clis-setup-php-pin-and-verify-its-ubuntu-latest
+
+jobs:
+  # Mirrors the host setup of release.yml and self-test-template.yml (no publishing, no QIT run).
+  host_php:
+    name: Host PHP ${{ matrix.php }}
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4', '8.3' ]
+    env:
+      NO_COLOR: 1
+      FORCE_COLOR: 0
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Print OS
+        run: cat /etc/os-release
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP (release.yml style)
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          tools: none
+          php-version: ${{ matrix.php }}
+
+      - name: Version Validation (release.yml)
+        run: |
+          php -v
+          ./qit --version
+          ./qit
+
+      - name: Setup PHP (self-test-template.yml style, with composer)
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Composer install (managed tests)
+        working-directory: _tests/managed_tests
+        run: composer install
+
+      - name: Composer install (src)
+        working-directory: src
+        run: composer install
+
+      - name: Test self-test runner
+        working-directory: _tests/managed_tests
+        run: vendor/bin/phpunit --do-not-cache-result --filter '/(QITLiveOutputTest|NormalizationTest)/' tests/self_test
+
+      - name: Restore ZIP Image Cache (exercises actions/cache v6)
+        id: cache-docker-zip
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: cache-zip
+          key: tmp-2604-cache-docker-zip-${{ matrix.php }}
+
+      - name: Update ZIP Image Cache if cache miss
+        if: steps.cache-docker-zip.outputs.cache-hit != 'true'
+        run: docker pull joshkeegan/zip:latest && mkdir -p cache-zip && docker image save joshkeegan/zip:latest --output ./cache-zip/zip.tar
+
+      - name: Use ZIP Image Cache if cache hit
+        if: steps.cache-docker-zip.outputs.cache-hit == 'true'
+        run: docker image load --input ./cache-zip/zip.tar
+
+  # Mirrors qit-environment-test-linux.yml on 26.04.
+  env_up:
+    name: env:up (env PHP ${{ matrix.php }})
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4', '8.3' ]
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Print OS
+        run: cat /etc/os-release
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+
+      - name: Enable dev mode
+        run: ./qit dev
+
+      - name: Connect to Staging QIT
+        run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
+
+      - name: Docker versions
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Composer install
+        working-directory: src
+        run: composer install
+
+      - name: Start environment
+        working-directory: src
+        run: php qit-cli.php env:up --wp nightly --php_version ${{ matrix.php }}
+
+      - name: Test Site Up
+        working-directory: src
+        run: |
+          siteUrl=$(php qit-cli.php env:list --field=site_url)
+          echo "Site URL: $siteUrl"
+          curl -fsS -o /dev/null -w "%{http_code}\n" "$siteUrl"
+          curl -fsS "$siteUrl/wp-json" | head -c 300; echo
+
+      - name: Verify PHP Version
+        working-directory: src
+        run: |
+          actual=$(docker exec $(php qit-cli.php env:list --field=docker_images | grep php) php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
+          [[ "$actual" == "${{ matrix.php }}" ]] || { echo "Mismatch: expected ${{ matrix.php }}, got $actual"; exit 1; }
+
+  # Exercises upload/download-artifact v7/v8 the way qit-custom-test-woocommerce.yml does (pattern + merge-multiple).
+  artifacts_upload:
+    runs-on: ubuntu-26.04
+    strategy:
+      matrix:
+        shard: [ 1, 2 ]
+    steps:
+      - run: mkdir -p out && echo "shard ${{ matrix.shard }}" > out/shard-${{ matrix.shard }}.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tmp-blob-${{ matrix.shard }}
+          path: out
+          retention-days: 1
+  artifacts_download:
+    needs: [ artifacts_upload ]
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: all
+          pattern: tmp-blob-*
+          merge-multiple: true
+      - run: ls -la all && test -f all/shard-1.txt && test -f all/shard-2.txt
