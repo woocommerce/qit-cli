@@ -27,10 +27,10 @@ jobs:
       QIT_DISABLE_ONBOARDING: yes
     steps:
       - name: Checkout code (Cross-platform)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup PHP (Cross-platform)
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.3'
 
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Docker on macOS
         if: matrix.os == 'macos-13'
-        uses: douglascamata/setup-docker-macos-action@f2b307ddc57e8b9d3f9761f3cafa8883b2cdffd4 # v1-alpha
+        uses: douglascamata/setup-docker-macos-action@d5ccc6aae0ce23e7700154f5e63cc53e6433ac48 # v1.1.0
 
       - name: Check Colima Status (Mac)
         if: matrix.os == 'macos-13'
