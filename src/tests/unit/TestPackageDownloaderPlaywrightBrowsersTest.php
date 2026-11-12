@@ -25,7 +25,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 
 	private const UBUNTU_2604_ERROR = 'ERROR: Playwright does not support chromium on ubuntu26.04';
 
-	/** @var string */
+	/** @var string|null */
 	private $work_dir;
 
 	/** @var string */
@@ -77,6 +77,10 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
+		if ( $this->work_dir === null ) {
+			return;
+		}
+
 		putenv( 'PATH=' . $this->original_path );
 		exec( 'rm -rf ' . escapeshellarg( $this->work_dir ) );
 
@@ -85,14 +89,14 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 
 	public function test_failed_install_warns_at_default_verbosity_and_returns_the_manifest(): void {
 		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
-		$this->fake_install( 'Error: EACCES: permission denied, mkdir /root/.cache/ms-playwright', 1 );
+		$this->fake_install( 'Error: EACCES: permission denied, mkdir <info>/root/.cache/ms-playwright</info>', 1 );
 
 		$output    = new BufferedOutput();
 		$manifests = $this->make_downloader( $output )->download( [ $this->package_dir => [] ], $this->work_dir . '/cache' );
 		$display   = $output->fetch();
 
 		$this->assertStringContainsString( 'Warning: Playwright could not install its browsers', $display );
-		$this->assertStringContainsString( 'EACCES: permission denied', $display );
+		$this->assertStringContainsString( 'EACCES: permission denied, mkdir <info>/root/.cache/ms-playwright</info>', $display );
 		$this->assertArrayHasKey( $this->package_dir, $manifests );
 		$this->assertSame( 'woocommerce/fake-e2e', $manifests[ $this->package_dir ]->get_package_id() );
 	}
@@ -107,19 +111,33 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$this->assertStringContainsString( "upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or run on ubuntu-24.04", $display );
 	}
 
-	public function test_other_install_failures_get_no_ubuntu_2604_hint(): void {
+	/**
+	 * @dataProvider other_install_failure_provider
+	 */
+	public function test_other_install_failures_get_no_ubuntu_2604_hint( string $install_error ): void {
 		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
-		$this->fake_install( 'Error: getaddrinfo ENOTFOUND playwright.azureedge.net', 1 );
+		$this->fake_install( $install_error, 1 );
 
 		$display = $this->download_local_package();
 
 		$this->assertStringContainsString( 'Warning: Playwright could not install its browsers', $display );
-		$this->assertStringNotContainsString( '1.61', $display );
-		$this->assertStringNotContainsString( 'ubuntu-24.04', $display );
+		$this->assertStringContainsString( $install_error, $display );
+		$this->assertStringNotContainsString( 'does not support Ubuntu 26.04', $display );
+	}
+
+	/**
+	 * @return array<string,array{string}>
+	 */
+	public function other_install_failure_provider(): array {
+		return [
+			'network error'              => [ 'Error: getaddrinfo ENOTFOUND playwright.azureedge.net' ],
+			'another unsupported distro' => [ 'ERROR: Playwright does not support chromium on ubuntu20.04' ],
+		];
 	}
 
 	public function test_a_failed_dry_run_goes_on_to_the_install(): void {
-		$this->fake_dry_run( self::UBUNTU_2604_ERROR, 1 );
+		// The listed directory exists, so only the exit code says the browsers aren't confirmed.
+		$this->fake_dry_run( self::UBUNTU_2604_ERROR . "\n  Install location:    {$this->work_dir}/browsers/chromium-1", 1 );
 		$this->fake_install( '', 0 );
 
 		$display = $this->download_local_package();
@@ -128,14 +146,28 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$this->assertStringNotContainsString( 'Playwright browsers already installed', $display );
 	}
 
-	public function test_a_dry_run_listing_no_install_location_goes_on_to_the_install(): void {
-		$this->fake_dry_run( '', 0 );
+	/**
+	 * @dataProvider unconfirmed_dry_run_provider
+	 */
+	public function test_a_dry_run_listing_no_install_location_goes_on_to_the_install( string $dry_run_output ): void {
+		$this->fake_dry_run( $dry_run_output, 0 );
 		$this->fake_install( '', 0 );
 
 		$display = $this->download_local_package();
 
 		$this->assertContains( 'playwright install', $this->npx_calls() );
 		$this->assertStringNotContainsString( 'Playwright browsers already installed', $display );
+	}
+
+	/**
+	 * @return array<string,array{string}>
+	 */
+	public function unconfirmed_dry_run_provider(): array {
+		return [
+			'no output'               => [ '' ],
+			'no location line'        => [ 'browser: chromium version 140.0' ],
+			'empty location'          => [ "browser: chromium version 140.0\n  Install location:    " ],
+		];
 	}
 
 	public function test_a_cached_package_in_a_batch_download_gets_the_browser_check(): void {
@@ -164,12 +196,48 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$this->assertSame( 'woocommerce/fake-e2e', $manifest->get_package_id() );
 	}
 
+	public function test_a_cached_package_with_its_browsers_present_is_not_reinstalled(): void {
+		$this->cache_package();
+		$this->fake_dry_run( $this->present_browser_listing(), 0 );
+
+		$output = new BufferedOutput();
+		$this->make_downloader( $output )->download_single( self::REFERENCE, $this->work_dir . '/cache' );
+
+		$this->assertSame( [ 'playwright install --dry-run' ], $this->npx_calls() );
+		$this->assertSame( "Checking for Playwright browsers...\nPlaywright browsers already installed\n", $output->fetch() );
+	}
+
+	public function test_a_cached_package_without_playwright_prints_nothing_about_browsers(): void {
+		$this->cache_package();
+		exec( 'rm -rf ' . escapeshellarg( $this->package_dir . '/node_modules' ) );
+
+		$output = new BufferedOutput();
+		$this->make_downloader( $output )->download_single( self::REFERENCE, $this->work_dir . '/cache' );
+
+		$this->assertSame( [], $this->npx_calls() );
+		$this->assertSame( '', $output->fetch() );
+	}
+
+	public function test_a_package_downloaded_again_in_the_same_run_is_checked_once(): void {
+		$this->cache_package();
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( self::UBUNTU_2604_ERROR, 1 );
+
+		// env:up downloads each remote package once for its requirements and again for setup.
+		$output = new BufferedOutput();
+		$this->make_downloader( $output )->download( [ self::REFERENCE => [] ], $this->work_dir . '/cache' );
+		$this->make_downloader( $output )->download_single( self::REFERENCE, $this->work_dir . '/cache' );
+
+		$this->assertSame( [ 'playwright install --dry-run', 'playwright install' ], $this->npx_calls() );
+		$this->assertSame( 1, substr_count( $output->fetch(), 'Warning: Playwright could not install its browsers' ) );
+	}
+
 	/**
 	 * @dataProvider unchanged_output_provider
 	 */
 	public function test_successful_paths_print_what_they_printed_before( string $case, int $verbosity, array $playwright_lines ): void {
 		if ( $case === 'already-installed' ) {
-			$this->fake_dry_run( '  Install location:    ' . $this->work_dir . '/browsers/chromium-1', 0 );
+			$this->fake_dry_run( $this->present_browser_listing(), 0 );
 		} else {
 			$this->fake_dry_run( $this->missing_browser_listing(), 0 );
 			$this->fake_install( 'Downloading Chromium...', 0 );
@@ -263,6 +331,10 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 				],
 			],
 		];
+	}
+
+	private function present_browser_listing(): string {
+		return "browser: chromium version 140.0\n  Install location:    {$this->work_dir}/browsers/chromium-1";
 	}
 
 	private function missing_browser_listing(): string {

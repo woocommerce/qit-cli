@@ -70,6 +70,9 @@ class TestPackageDownloader {
 	/** @var array<string,TestPackageManifest> Parent manifests keyed by checksum */
 	protected array $parent_manifests = [];
 
+	/** @var array<string,true> Package dirs whose Playwright browsers this process already checked */
+	private static array $playwright_checked_dirs = [];
+
 	public function __construct(
 		Cache $cache,
 		Zipper $zipper,
@@ -568,6 +571,7 @@ class TestPackageDownloader {
 
 				// Restore metadata for caller access
 				$this->package_metadata[ $reference ] = $cached['metadata'];
+				$this->install_playwright_browsers_for_cached_package( $reference );
 
 				try {
 					return new TestPackageManifest( $cached['manifest'] );
@@ -834,8 +838,10 @@ class TestPackageDownloader {
 	 * @param string $package_dir The directory containing the package.
 	 */
 	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
-		// Always show feedback about browser check
-		$this->output->writeln( 'Checking for Playwright browsers...' );
+		// One env:up downloads the same package several times; check its browsers once.
+		if ( isset( self::$playwright_checked_dirs[ $package_dir ] ) ) {
+			return;
+		}
 
 		// Check if Playwright is installed
 		if ( ! file_exists( $package_dir . '/node_modules/@playwright/test' ) &&
@@ -846,6 +852,9 @@ class TestPackageDownloader {
 			}
 			return;
 		}
+
+		self::$playwright_checked_dirs[ $package_dir ] = true;
+		$this->output->writeln( 'Checking for Playwright browsers...' );
 
 		// First check with --dry-run to see if browsers are already installed
 		$dry_run_command     = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install --dry-run 2>&1';
@@ -859,13 +868,16 @@ class TestPackageDownloader {
 		$install_locations = 0;
 		foreach ( $dry_run_output as $line ) {
 			if ( strpos( $line, 'Install location:' ) !== false ) {
-				++$install_locations;
 				// Extract path from line like "  Install location:    /home/user/.cache/ms-playwright/chromium-1187"
 				// First remove "Install location:" then trim whitespace
 				$parts = explode( 'Install location:', $line );
 				if ( count( $parts ) > 1 ) {
 					$path = trim( $parts[1] );
-					if ( ! empty( $path ) && ! is_dir( $path ) ) {
+					if ( empty( $path ) ) {
+						continue;
+					}
+					++$install_locations;
+					if ( ! is_dir( $path ) ) {
 						$browsers_needed = true;
 						if ( $this->output->isVeryVerbose() ) {
 							$this->output->writeln( "Browser directory missing: $path" );
@@ -893,7 +905,7 @@ class TestPackageDownloader {
 		if ( $playwright_return_code !== 0 ) {
 			// Don't throw an exception, just warn - API-only packages run without browsers
 			$install_error = implode( "\n", $playwright_output );
-			$this->output->writeln( '<comment>Warning: Playwright could not install its browsers, so tests that open a browser will fail:</comment>' );
+			$this->output->writeln( '<comment>Warning: Playwright could not install its browsers, so tests that need a missing browser will fail:</comment>' );
 			$this->output->writeln( OutputFormatter::escape( $install_error ) );
 			if ( preg_match( '/does not support \S+ on ubuntu26\.04/', $install_error ) ) {
 				$this->output->writeln( "<comment>Playwright before 1.61 does not support Ubuntu 26.04: upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or run on ubuntu-24.04.</comment>" );
