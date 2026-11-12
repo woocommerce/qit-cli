@@ -9,6 +9,7 @@ use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use QIT_CLI\Utils\PackageReferenceUtils;
 use QIT_CLI\Validation\ArtifactValidator;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\get_manager_url;
@@ -219,6 +220,7 @@ class TestPackageDownloader {
 					if ( $this->output->isVerbose() ) {
 						$this->output->writeln( "Using cached package: $first_reference (checksum validated)" );
 					}
+					$this->install_playwright_browsers_for_cached_package( $first_reference );
 					$artifact_downloaded = true;
 
 					// For subpackage extraction, we need the parent manifest
@@ -467,6 +469,7 @@ class TestPackageDownloader {
 			if ( $this->output->isVerbose() ) {
 				$this->output->writeln( "Using cached package: $reference (checksum validated)" );
 			}
+			$this->install_playwright_browsers_for_cached_package( $reference );
 			return $cached_manifest;
 		}
 
@@ -845,14 +848,18 @@ class TestPackageDownloader {
 		}
 
 		// First check with --dry-run to see if browsers are already installed
-		$dry_run_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install --dry-run 2>&1';
-		$dry_run_output  = [];
-		exec( $dry_run_command, $dry_run_output );
+		$dry_run_command     = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install --dry-run 2>&1';
+		$dry_run_output      = [];
+		$dry_run_return_code = 0;
+		exec( $dry_run_command, $dry_run_output, $dry_run_return_code );
 
-		// Check if all browser paths exist
-		$browsers_needed = false;
+		// Check if all browser paths exist. A dry run that fails or lists no location doesn't prove the
+		// browsers are there (old Playwright fails it on an unsupported OS), so the install runs and reports why.
+		$browsers_needed   = $dry_run_return_code !== 0;
+		$install_locations = 0;
 		foreach ( $dry_run_output as $line ) {
 			if ( strpos( $line, 'Install location:' ) !== false ) {
+				++$install_locations;
 				// Extract path from line like "  Install location:    /home/user/.cache/ms-playwright/chromium-1187"
 				// First remove "Install location:" then trim whitespace
 				$parts = explode( 'Install location:', $line );
@@ -869,7 +876,7 @@ class TestPackageDownloader {
 			}
 		}
 
-		if ( ! $browsers_needed ) {
+		if ( ! $browsers_needed && $install_locations > 0 ) {
 			$this->output->writeln( 'Playwright browsers already installed' );
 			return;
 		}
@@ -884,15 +891,30 @@ class TestPackageDownloader {
 		exec( $playwright_command . ' 2>&1', $playwright_output, $playwright_return_code );
 
 		if ( $playwright_return_code !== 0 ) {
-			// Don't throw an exception, just warn - some packages may not need browsers
-			if ( $this->output->isVerbose() ) {
-				$this->output->writeln( '<warning>Warning: playwright install failed (this may be expected for some packages):</warning>' );
-				$this->output->writeln( implode( "\n", $playwright_output ) );
+			// Don't throw an exception, just warn - API-only packages run without browsers
+			$install_error = implode( "\n", $playwright_output );
+			$this->output->writeln( '<comment>Warning: Playwright could not install its browsers, so tests that open a browser will fail:</comment>' );
+			$this->output->writeln( OutputFormatter::escape( $install_error ) );
+			if ( preg_match( '/does not support \S+ on ubuntu26\.04/', $install_error ) ) {
+				$this->output->writeln( "<comment>Playwright before 1.61 does not support Ubuntu 26.04: upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or run on ubuntu-24.04.</comment>" );
 			}
 		} else {
 			if ( $this->output->isVerbose() ) {
 				$this->output->writeln( 'Playwright browsers installed successfully' );
 			}
+		}
+	}
+
+	/**
+	 * Run the browser check for a package served from the cache, which doesn't record browser
+	 * state: browsers can be missing after an earlier failed install or a cleared browser cache.
+	 *
+	 * @param string $reference The package reference, whose metadata the cache lookup restored.
+	 */
+	private function install_playwright_browsers_for_cached_package( string $reference ): void {
+		$package_dir = $this->package_metadata[ $reference ]['downloaded_path'];
+		if ( file_exists( $package_dir . '/package.json' ) ) {
+			$this->install_playwright_browsers_if_needed( $package_dir );
 		}
 	}
 
