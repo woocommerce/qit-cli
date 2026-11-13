@@ -101,6 +101,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 
 		$this->assertStringContainsString( 'Warning: Playwright could not install its browsers', $display );
 		$this->assertStringContainsString( 'EACCES: permission denied, mkdir <info>/root/.cache/ms-playwright</info>', $display );
+		$this->assertStringNotContainsString( 'hidden, run with -v', $display );
 		$this->assertArrayHasKey( $this->package_dir, $manifests );
 		$this->assertSame( 'woocommerce/fake-e2e', $manifests[ $this->package_dir ]->get_package_id() );
 	}
@@ -240,13 +241,28 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
 		$this->fake_install( self::UBUNTU_2604_ERROR, 1 );
 		App::setVar( 'mock_' . self::PACKAGE_URL, 'fake zip' );
+		$this->cache_package_urls();
 
-		// The second download wipes the directory and extracts a fresh copy, whose browsers nobody has checked.
+		// A cache dir behind a symlink makes the package dir's real path differ from the one it is downloaded to.
+		mkdir( $this->work_dir . '/cache-real' );
+		symlink( $this->work_dir . '/cache-real', $this->work_dir . '/cache' );
+
+		// Without a cached checksum each download wipes packages/<md5> and extracts a fresh copy, whose browsers nobody has checked.
 		$output     = new BufferedOutput();
 		$downloader = $this->make_downloader( $output, $this->zipper_extracting_the_package() );
-		$url_info   = [ 'url' => self::PACKAGE_URL, 'checksum' => null ];
-		$downloader->process_package( self::REFERENCE, $url_info, $this->work_dir . '/downloads', false, true, true, true );
-		$downloader->process_package( self::REFERENCE, $url_info, $this->work_dir . '/downloads', false, true, true, true );
+		$downloader->download_single( self::REFERENCE, $this->work_dir . '/cache' );
+		$downloader->download_single( self::REFERENCE, $this->work_dir . '/cache' );
+
+		$this->assertSame( [ 'playwright install --dry-run', 'playwright install', 'playwright install --dry-run', 'playwright install' ], $this->npx_calls() );
+	}
+
+	public function test_different_packages_in_the_same_cache_are_each_checked(): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( '', 0 );
+		exec( 'cp -R ' . escapeshellarg( $this->package_dir ) . ' ' . escapeshellarg( $this->work_dir . '/other-package' ) );
+
+		$output = new BufferedOutput();
+		$this->make_downloader( $output )->download( [ $this->package_dir => [], $this->work_dir . '/other-package' => [] ], $this->work_dir . '/cache' );
 
 		$this->assertSame( [ 'playwright install --dry-run', 'playwright install', 'playwright install --dry-run', 'playwright install' ], $this->npx_calls() );
 	}
@@ -272,6 +288,45 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$this->assertStringContainsString( "install line 12\n", $display );
 		$this->assertStringContainsString( self::UBUNTU_2604_ERROR, $display );
 		$this->assertStringContainsString( '11 earlier lines hidden, run with -v to see them', $display );
+		$this->assertStringContainsString( 'or use Ubuntu 24.04', $display );
+	}
+
+	/**
+	 * @dataProvider install_failure_length_provider
+	 */
+	public function test_an_install_failure_is_trimmed_only_past_twenty_lines( int $line_count, string $hidden_note ): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( $this->numbered_lines( $line_count ), 1 );
+
+		$display = $this->download_local_package();
+
+		$this->assertStringContainsString( "install line $line_count", $display );
+		if ( $hidden_note === '' ) {
+			$this->assertStringContainsString( "install line 1\n", $display );
+			$this->assertStringNotContainsString( 'hidden, run with -v', $display );
+		} else {
+			$this->assertStringNotContainsString( "install line 1\n", $display );
+			$this->assertStringContainsString( $hidden_note, $display );
+		}
+	}
+
+	/**
+	 * @return array<string,array{int,string}>
+	 */
+	public function install_failure_length_provider(): array {
+		return [
+			'20 lines' => [ 20, '' ],
+			'21 lines' => [ 21, '(1 earlier line hidden, run with -v to see it)' ],
+		];
+	}
+
+	public function test_the_ubuntu_2604_hint_shows_when_its_error_is_in_the_hidden_lines(): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( self::UBUNTU_2604_ERROR . "\n" . $this->numbered_lines( 25 ), 1 );
+
+		$display = $this->download_local_package();
+
+		$this->assertStringNotContainsString( self::UBUNTU_2604_ERROR, $display );
 		$this->assertStringContainsString( 'or use Ubuntu 24.04', $display );
 	}
 
@@ -345,6 +400,20 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 	 * Manager and the downloaded package, already on disk.
 	 */
 	private function cache_package(): void {
+		$this->cache_package_urls();
+
+		$this->cache_entries[ 'test_package_checksum_' . self::CHECKSUM ] = [
+			'manifest' => $this->manifest_data(),
+			'metadata' => [
+				'reference'       => self::REFERENCE,
+				'remote'          => true,
+				'downloaded_path' => $this->package_dir,
+				'version'         => '1.0.0',
+			],
+		];
+	}
+
+	private function cache_package_urls(): void {
 		$this->cache_entries[ 'test_package_urls_' . md5( self::REFERENCE ) ] = [
 			'data'      => [
 				'urls' => [
@@ -356,16 +425,6 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 				],
 			],
 			'cached_at' => time(),
-		];
-
-		$this->cache_entries[ 'test_package_checksum_' . self::CHECKSUM ] = [
-			'manifest' => $this->manifest_data(),
-			'metadata' => [
-				'reference'       => self::REFERENCE,
-				'remote'          => true,
-				'downloaded_path' => $this->package_dir,
-				'version'         => '1.0.0',
-			],
 		];
 	}
 

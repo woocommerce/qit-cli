@@ -834,7 +834,7 @@ class TestPackageDownloader {
 		}
 	}
 
-	private function playwright_checked_key( string $package_dir ): string {
+	private function resolve_package_dir( string $package_dir ): string {
 		return realpath( $package_dir ) ?: $package_dir;
 	}
 
@@ -844,9 +844,10 @@ class TestPackageDownloader {
 	 * @param string $package_dir The directory containing the package.
 	 */
 	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
-		// One env:up downloads the same package several times; check its browsers once.
-		$checked_key = $this->playwright_checked_key( $package_dir );
-		if ( isset( self::$playwright_checked_dirs[ $checked_key ] ) ) {
+		// One env:up downloads the same package several times; check its browsers once. The commands below
+		// run in the resolved dir too, since the shell's cd resolves "symlink/.." differently than realpath.
+		$package_dir = $this->resolve_package_dir( $package_dir );
+		if ( isset( self::$playwright_checked_dirs[ $package_dir ] ) ) {
 			return;
 		}
 
@@ -860,7 +861,7 @@ class TestPackageDownloader {
 			return;
 		}
 
-		self::$playwright_checked_dirs[ $checked_key ] = true;
+		self::$playwright_checked_dirs[ $package_dir ] = true;
 		$this->output->writeln( 'Checking for Playwright browsers...' );
 
 		// First check with --dry-run to see if browsers are already installed
@@ -917,7 +918,7 @@ class TestPackageDownloader {
 			if ( ! $this->output->isVerbose() && count( $shown_lines ) > self::PLAYWRIGHT_ERROR_LINES_SHOWN ) {
 				$hidden_lines = count( $shown_lines ) - self::PLAYWRIGHT_ERROR_LINES_SHOWN;
 				$shown_lines  = array_slice( $shown_lines, -self::PLAYWRIGHT_ERROR_LINES_SHOWN );
-				$this->output->writeln( "($hidden_lines earlier lines hidden, run with -v to see them)" );
+				$this->output->writeln( $hidden_lines === 1 ? '(1 earlier line hidden, run with -v to see it)' : "($hidden_lines earlier lines hidden, run with -v to see them)" );
 			}
 			$this->output->writeln( OutputFormatter::escape( implode( "\n", $shown_lines ) ) );
 			if ( preg_match( '/does not support \S+ on ubuntu26\.04/', $install_error ) ) {
@@ -1193,7 +1194,7 @@ class TestPackageDownloader {
 
 		// Extract the package
 		$this->zipper->extract_zip( $zip_file, $target_dir );
-		unset( self::$playwright_checked_dirs[ $this->playwright_checked_key( $target_dir ) ] );
+		unset( self::$playwright_checked_dirs[ $this->resolve_package_dir( $target_dir ) ] );
 
 		// Validate test package artifact integrity
 		try {
