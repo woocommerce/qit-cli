@@ -175,30 +175,30 @@ class RemoteTestRunner {
 	): array {
 		$profile_name      = $input->get_profile_name();
 		$profile_test_type = $profile_test_type ?? $test_type;
-		$profile           = $this->get_profile_with_fallback( $command, $profile_test_type, $profile_name );
-		$options           = [];
+		$profile           = EnvironmentConfigResolver::normalize_aliases(
+			$this->get_profile_with_fallback( $command, $profile_test_type, $profile_name )
+		);
+		$environment       = [];
 
 		$environment_name = null;
 		$cli_environment  = $input->hasOption( 'environment' ) ? $input->getOption( 'environment' ) : null;
-		if ( is_string( $cli_environment ) ) {
+		if ( $input->hasOption( 'environment' ) && is_string( $cli_environment ) ) {
 			$environment_name = $cli_environment;
 		} elseif ( isset( $profile['environment'] ) && is_string( $profile['environment'] ) ) {
 			$environment_name = $profile['environment'];
 		}
 
 		if ( $environment_name !== null ) {
-			$options = EnvironmentConfigResolver::normalize_aliases( $command->get_environment_config( $environment_name ) );
+			$environment = EnvironmentConfigResolver::normalize_aliases( $command->get_environment_config( $environment_name ) );
 		}
 
-		foreach ( $profile as $key => $value ) {
-			if ( $key === 'environment' ) {
-				continue;
-			}
+		$effective_config = array_replace( $environment, $profile );
+		$payload_keys     = array_values( array_diff( array_keys( $options_to_send ), [ 'environment', 'remote', 'sut', 'zip' ] ) );
+		$this->validate_effective_remote_config( $effective_config, $payload_keys );
 
-			$options[ $key ] = $value;
-		}
+		$options = array_intersect_key( $effective_config, array_flip( $payload_keys ) );
 
-		foreach ( array_keys( $options_to_send ) as $opt_name ) {
+		foreach ( $payload_keys as $opt_name ) {
 			if ( ! $input->hasOption( $opt_name ) ) {
 				continue;
 			}
@@ -212,10 +212,15 @@ class RemoteTestRunner {
 			}
 		}
 
-		$sut_arg = $input->getArgument( 'sut' ) ?: ( $options['sut']['slug'] ?? '' );
+		$positional_sut = $input->getArgument( 'sut' );
+		$effective_sut  = isset( $effective_config['sut'] ) && is_array( $effective_config['sut'] )
+			? $effective_config['sut']
+			: [];
+		$sut_arg        = $positional_sut ?: ( $effective_sut['slug'] ?? '' );
 		if ( empty( $sut_arg ) ) {
 			throw new \InvalidArgumentException( 'No System-Under-Test specified (argument or profile).' );
 		}
+		$this->validate_remote_sut_source( $input, $positional_sut, $effective_sut );
 
 		$options['woo_id'] = $this->slug_or_id_to_id( (string) $sut_arg );
 		$this->process_zip_option( $input, $output, (string) $sut_arg, $options );
@@ -225,6 +230,59 @@ class RemoteTestRunner {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * @param array<string,mixed> $effective_config Selected profile and environment configuration.
+	 * @param array<string>       $payload_keys     Manager-supported payload keys.
+	 */
+	private function validate_effective_remote_config( array $effective_config, array $payload_keys ): void {
+		$allowed     = array_merge( $payload_keys, [ 'environment', 'sut' ] );
+		$unsupported = [];
+
+		foreach ( $effective_config as $key => $value ) {
+			if ( in_array( $key, $allowed, true ) || $this->is_empty_config_value( $value ) ) {
+				continue;
+			}
+
+			$unsupported[] = $key;
+		}
+
+		if ( empty( $unsupported ) ) {
+			return;
+		}
+
+		sort( $unsupported );
+		throw new \InvalidArgumentException( sprintf(
+			'Remote execution does not support effective qit.json option(s): %s.',
+			implode( ', ', $unsupported )
+		) );
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	private function is_empty_config_value( $value ): bool {
+		return $value === null || $value === false || $value === '' || $value === [];
+	}
+
+	/**
+	 * @param QITInput            $input          The command input.
+	 * @param string|null         $positional_sut Explicit positional SUT override.
+	 * @param array<string,mixed> $effective_sut
+	 */
+	private function validate_remote_sut_source( QITInput $input, ?string $positional_sut, array $effective_sut ): void {
+		if ( ! empty( $positional_sut ) || $input->hasOption( 'zip' ) ) {
+			return;
+		}
+
+		$source      = $effective_sut['source'] ?? [];
+		$source_type = is_array( $source ) ? ( $source['type'] ?? null ) : null;
+		if ( in_array( $source_type, [ 'build', 'local', 'url' ], true ) ) {
+			throw new \InvalidArgumentException(
+				'Remote execution does not infer development SUT sources from qit.json. Pass the source explicitly with --zip.'
+			);
+		}
 	}
 
 	/**
