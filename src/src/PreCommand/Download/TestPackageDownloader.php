@@ -70,6 +70,8 @@ class TestPackageDownloader {
 	/** @var array<string,TestPackageManifest> Parent manifests keyed by checksum */
 	protected array $parent_manifests = [];
 
+	private const PLAYWRIGHT_ERROR_LINES_SHOWN = 20;
+
 	/** @var array<string,true> Package dirs whose Playwright browsers this process already checked */
 	private static array $playwright_checked_dirs = [];
 
@@ -832,6 +834,10 @@ class TestPackageDownloader {
 		}
 	}
 
+	private function playwright_checked_key( string $package_dir ): string {
+		return realpath( $package_dir ) ?: $package_dir;
+	}
+
 	/**
 	 * Install Playwright browsers if Playwright is detected in the package.
 	 *
@@ -839,7 +845,8 @@ class TestPackageDownloader {
 	 */
 	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
 		// One env:up downloads the same package several times; check its browsers once.
-		if ( isset( self::$playwright_checked_dirs[ $package_dir ] ) ) {
+		$checked_key = $this->playwright_checked_key( $package_dir );
+		if ( isset( self::$playwright_checked_dirs[ $checked_key ] ) ) {
 			return;
 		}
 
@@ -853,7 +860,7 @@ class TestPackageDownloader {
 			return;
 		}
 
-		self::$playwright_checked_dirs[ $package_dir ] = true;
+		self::$playwright_checked_dirs[ $checked_key ] = true;
 		$this->output->writeln( 'Checking for Playwright browsers...' );
 
 		// First check with --dry-run to see if browsers are already installed
@@ -906,9 +913,15 @@ class TestPackageDownloader {
 			// Don't throw an exception, just warn - API-only packages run without browsers
 			$install_error = implode( "\n", $playwright_output );
 			$this->output->writeln( '<comment>Warning: Playwright could not install its browsers, so tests that need a missing browser will fail:</comment>' );
-			$this->output->writeln( OutputFormatter::escape( $install_error ) );
+			$shown_lines = $playwright_output;
+			if ( ! $this->output->isVerbose() && count( $shown_lines ) > self::PLAYWRIGHT_ERROR_LINES_SHOWN ) {
+				$hidden_lines = count( $shown_lines ) - self::PLAYWRIGHT_ERROR_LINES_SHOWN;
+				$shown_lines  = array_slice( $shown_lines, -self::PLAYWRIGHT_ERROR_LINES_SHOWN );
+				$this->output->writeln( "($hidden_lines earlier lines hidden, run with -v to see them)" );
+			}
+			$this->output->writeln( OutputFormatter::escape( implode( "\n", $shown_lines ) ) );
 			if ( preg_match( '/does not support \S+ on ubuntu26\.04/', $install_error ) ) {
-				$this->output->writeln( "<comment>Playwright before 1.61 does not support Ubuntu 26.04: upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or run on ubuntu-24.04.</comment>" );
+				$this->output->writeln( "<comment>Playwright before 1.61 does not support Ubuntu 26.04: upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or use Ubuntu 24.04.</comment>" );
 			}
 		} else {
 			if ( $this->output->isVerbose() ) {
@@ -1180,6 +1193,7 @@ class TestPackageDownloader {
 
 		// Extract the package
 		$this->zipper->extract_zip( $zip_file, $target_dir );
+		unset( self::$playwright_checked_dirs[ $this->playwright_checked_key( $target_dir ) ] );
 
 		// Validate test package artifact integrity
 		try {

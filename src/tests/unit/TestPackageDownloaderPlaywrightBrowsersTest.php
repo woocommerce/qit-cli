@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use PHPUnit\Framework\TestCase;
+use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
@@ -22,6 +23,8 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 	private const REFERENCE = 'woocommerce/fake-e2e:1.0.0';
 
 	private const CHECKSUM = 'abc123';
+
+	private const PACKAGE_URL = 'https://example.com/fake-e2e.zip';
 
 	private const UBUNTU_2604_ERROR = 'ERROR: Playwright does not support chromium on ubuntu26.04';
 
@@ -82,6 +85,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		}
 
 		putenv( 'PATH=' . $this->original_path );
+		App::setVar( 'mock_' . self::PACKAGE_URL, null );
 		exec( 'rm -rf ' . escapeshellarg( $this->work_dir ) );
 
 		parent::tearDown();
@@ -108,7 +112,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$display = $this->download_local_package();
 
 		$this->assertStringContainsString( self::UBUNTU_2604_ERROR, $display );
-		$this->assertStringContainsString( "upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or run on ubuntu-24.04", $display );
+		$this->assertStringContainsString( "upgrade this package's Playwright (@playwright/test or playwright) to 1.61 or later, or use Ubuntu 24.04", $display );
 	}
 
 	/**
@@ -232,6 +236,56 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		$this->assertSame( 1, substr_count( $output->fetch(), 'Warning: Playwright could not install its browsers' ) );
 	}
 
+	public function test_a_package_downloaded_again_into_the_same_directory_is_checked_again(): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( self::UBUNTU_2604_ERROR, 1 );
+		App::setVar( 'mock_' . self::PACKAGE_URL, 'fake zip' );
+
+		// The second download wipes the directory and extracts a fresh copy, whose browsers nobody has checked.
+		$output     = new BufferedOutput();
+		$downloader = $this->make_downloader( $output, $this->zipper_extracting_the_package() );
+		$url_info   = [ 'url' => self::PACKAGE_URL, 'checksum' => null ];
+		$downloader->process_package( self::REFERENCE, $url_info, $this->work_dir . '/downloads', false, true, true, true );
+		$downloader->process_package( self::REFERENCE, $url_info, $this->work_dir . '/downloads', false, true, true, true );
+
+		$this->assertSame( [ 'playwright install --dry-run', 'playwright install', 'playwright install --dry-run', 'playwright install' ], $this->npx_calls() );
+	}
+
+	public function test_the_same_package_through_another_path_is_checked_once(): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( '', 0 );
+
+		$this->download_local_package();
+		$output = new BufferedOutput();
+		$this->make_downloader( $output )->download( [ $this->work_dir . '/bin/../package' => [] ], $this->work_dir . '/cache' );
+
+		$this->assertSame( [ 'playwright install --dry-run', 'playwright install' ], $this->npx_calls() );
+	}
+
+	public function test_a_long_install_failure_shows_its_last_lines_at_default_verbosity(): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( $this->numbered_lines( 30 ) . "\n" . self::UBUNTU_2604_ERROR, 1 );
+
+		$display = $this->download_local_package();
+
+		$this->assertStringNotContainsString( 'install line 11', $display );
+		$this->assertStringContainsString( "install line 12\n", $display );
+		$this->assertStringContainsString( self::UBUNTU_2604_ERROR, $display );
+		$this->assertStringContainsString( '11 earlier lines hidden, run with -v to see them', $display );
+		$this->assertStringContainsString( 'or use Ubuntu 24.04', $display );
+	}
+
+	public function test_a_long_install_failure_shows_every_line_with_verbose(): void {
+		$this->fake_dry_run( $this->missing_browser_listing(), 0 );
+		$this->fake_install( $this->numbered_lines( 30 ), 1 );
+
+		$display = $this->download_local_package( OutputInterface::VERBOSITY_VERBOSE );
+
+		$this->assertStringContainsString( "install line 1\n", $display );
+		$this->assertStringContainsString( 'install line 30', $display );
+		$this->assertStringNotContainsString( 'earlier lines hidden', $display );
+	}
+
 	/**
 	 * @dataProvider unchanged_output_provider
 	 */
@@ -271,7 +325,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 		return $output->fetch();
 	}
 
-	private function make_downloader( OutputInterface $output ): TestPackageDownloader {
+	private function make_downloader( OutputInterface $output, ?Zipper $zipper = null ): TestPackageDownloader {
 		$cache = $this->createMock( Cache::class );
 		$cache->method( 'get' )->willReturnCallback( function ( string $key ) {
 			return $this->cache_entries[ $key ] ?? null;
@@ -279,7 +333,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 
 		return new TestPackageDownloader(
 			$cache,
-			$this->createMock( Zipper::class ),
+			$zipper ?? $this->createMock( Zipper::class ),
 			$output,
 			new TestPackageManifestParser(),
 			$this->createMock( ArtifactValidator::class )
@@ -295,7 +349,7 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 			'data'      => [
 				'urls' => [
 					self::REFERENCE => [
-						'url'      => 'https://example.com/fake-e2e.zip',
+						'url'      => self::PACKAGE_URL,
 						'checksum' => self::CHECKSUM,
 						'version'  => '1.0.0',
 					],
@@ -331,6 +385,21 @@ class TestPackageDownloaderPlaywrightBrowsersTest extends TestCase {
 				],
 			],
 		];
+	}
+
+	private function zipper_extracting_the_package(): Zipper {
+		$zipper = $this->createMock( Zipper::class );
+		$zipper->method( 'extract_zip' )->willReturnCallback( function ( string $zip_file, string $target_dir ) {
+			exec( 'cp -R ' . escapeshellarg( $this->package_dir ) . ' ' . escapeshellarg( $target_dir ) );
+		} );
+
+		return $zipper;
+	}
+
+	private function numbered_lines( int $count ): string {
+		return implode( "\n", array_map( function ( int $n ) {
+			return "install line $n";
+		}, range( 1, $count ) ) );
 	}
 
 	private function present_browser_listing(): string {
