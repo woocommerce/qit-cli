@@ -37,6 +37,37 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 	}
 
 	/**
+	 * @return array<string,array{string,string}>
+	 */
+	public function remote_command_provider(): array {
+		return [
+			'activation' => [ 'run:activation', 'activation' ],
+			'woo-api'    => [ 'run:woo-api', 'woo-api' ],
+			'woo-e2e'    => [ 'run:woo-e2e', 'woo-e2e' ],
+		];
+	}
+
+	/**
+	 * @return array<string,array{array<string,string>}>
+	 */
+	public function development_sut_source_provider(): array {
+		return [
+			'local' => [
+				[
+					'type' => 'local',
+					'path' => '/tmp/private-plugin',
+				],
+			],
+			'url'   => [
+				[
+					'type' => 'url',
+					'url'  => 'https://example.test/private-plugin.zip',
+				],
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider extension_set_command_provider
 	 */
 	public function test_command_exposes_extension_set_option( string $command_name ): void {
@@ -46,6 +77,101 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 			$command->getDefinition()->hasOption( 'extension_set' ),
 			sprintf( '%s must expose the --extension_set option.', $command_name )
 		);
+	}
+
+	/**
+	 * @dataProvider extension_set_command_provider
+	 */
+	public function test_managed_alias_exposes_remote_option( string $command_name ): void {
+		$command = $GLOBALS['qit_application']->find( $command_name );
+
+		$this->assertTrue(
+			$command->getDefinition()->hasOption( 'remote' ),
+			sprintf( '%s must expose the --remote option.', $command_name )
+		);
+	}
+
+	public function test_generic_e2e_does_not_expose_remote_option(): void {
+		$command = $GLOBALS['qit_application']->find( 'run:e2e' );
+
+		$this->assertFalse( $command->getDefinition()->hasOption( 'remote' ) );
+	}
+
+	/**
+	 * @dataProvider remote_command_provider
+	 */
+	public function test_explicit_remote_async_enqueues_the_managed_test_type( string $command_name, string $test_type ): void {
+		$enqueue_url = sprintf( '%s/wp-json/cd/v1/enqueue-%s', \QIT_CLI\get_manager_url(), $test_type );
+		App::setVar( 'mock_' . $enqueue_url, json_encode( [ 'test_run_id' => 4242 ] ) );
+		App::setVar( 'mocked_request', null );
+
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'  => $command_name,
+				'sut'      => 'woocommerce',
+				'--remote' => true,
+				'--async'  => true,
+				'--json'   => true,
+			] );
+			$request     = App::getVar( 'mocked_request' );
+		} finally {
+			App::setVar( 'mock_' . $enqueue_url, null );
+			App::setVar( 'mocked_request', null );
+		}
+
+		$this->assertSame( Command::SUCCESS, $exit_code, $application->getDisplay() );
+		$this->assertIsArray( $request );
+		$this->assertSame( $enqueue_url, $request['url'] );
+		$this->assertArrayNotHasKey( 'remote', $request['post_body'] );
+		$this->assertArrayNotHasKey( 'sut', $request['post_body'] );
+
+		$response = json_decode( $application->getDisplay(), true );
+		$this->assertIsArray( $response );
+		$this->assertSame( 4242, $response['test_run_id'] );
+	}
+
+	public function test_explicit_remote_rejects_local_only_options(): void {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester( function ( $application ) {
+				$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
+			} );
+			$exit_code   = $application->run( [
+				'command'        => 'run:woo-api',
+				'sut'            => 'woocommerce',
+				'--remote'       => true,
+				'--test-package' => [ 'woocommerce/core-api-tests:latest' ],
+				'--json'         => true,
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'local-only option', $application->getDisplay() );
+		$this->assertStringContainsString( '--test-package', $application->getDisplay() );
+	}
+
+	public function test_remote_run_is_rejected_inside_a_manager_worker(): void {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		putenv( 'QIT_TEST_RUN_ID=4242' );
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'  => 'run:woo-api',
+				'sut'      => 'woocommerce',
+				'--remote' => true,
+				'--json'   => true,
+			] );
+		} finally {
+			putenv( 'QIT_TEST_RUN_ID' );
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'QIT_TEST_RUN_ID is set', $application->getDisplay() );
+		$this->assertStringNotContainsString( '4242', $application->getDisplay() );
 	}
 
 	public function test_resolves_extension_set_into_plugins(): void {
@@ -251,6 +377,129 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 
 		$this->assertSame( '6.6.1', $options['wordpress_version'] );
 		$this->assertSame( '8.3', $options['php_version'] );
+	}
+
+	public function test_remote_rejects_unsupported_effective_config_without_leaking_values(): void {
+		$config_path = $this->write_config( [
+			'environments' => [
+				'remote-env' => [
+					'envs' => [ 'API_TOKEN' => 'environment-secret-value' ],
+				],
+			],
+			'test_types'   => [
+				'woo-api' => [
+					'default' => [
+						'environment' => 'remote-env',
+						'blueprint'   => 'profile-secret-value',
+					],
+				],
+			],
+		] );
+
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester( function ( $application ) {
+				$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
+			} );
+			$exit_code   = $application->run( [
+				'command'  => 'run:woo-api',
+				'sut'      => 'woocommerce',
+				'--remote' => true,
+				'--config' => $config_path,
+				'--json'   => true,
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+			unlink( $config_path );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'blueprint', $application->getDisplay() );
+		$this->assertStringContainsString( 'envs', $application->getDisplay() );
+		$this->assertStringNotContainsString( 'profile-secret-value', $application->getDisplay() );
+		$this->assertStringNotContainsString( 'environment-secret-value', $application->getDisplay() );
+	}
+
+	/**
+	 * @dataProvider development_sut_source_provider
+	 * @param array<string,string> $source
+	 */
+	public function test_configured_development_sut_requires_explicit_zip( array $source ): void {
+		$config_path = $this->write_config( [
+			'test_types' => [
+				'woo-api' => [
+					'default' => [
+						'sut' => [
+							'type'   => 'plugin',
+							'slug'   => 'woocommerce',
+							'source' => $source,
+						],
+					],
+				],
+			],
+		] );
+
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester( function ( $application ) {
+				$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
+			} );
+			$exit_code   = $application->run( [
+				'command'  => 'run:woo-api',
+				'--remote' => true,
+				'--config' => $config_path,
+				'--json'   => true,
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+			unlink( $config_path );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'Pass the source explicitly with --zip', $application->getDisplay() );
+		$this->assertStringNotContainsString( $source['path'] ?? $source['url'] ?? $source['command'], $application->getDisplay() );
+	}
+
+	public function test_explicit_zip_strips_effective_sut_from_remote_payload(): void {
+		$config_path = $this->write_config( [
+			'test_types' => [
+				'woo-api' => [
+					'default' => [
+						'sut' => [
+							'type'   => 'plugin',
+							'slug'   => 'woocommerce',
+							'source' => [
+								'type' => 'local',
+								'path' => '/tmp/private-plugin',
+							],
+						],
+					],
+				],
+			],
+		] );
+		$zip_path    = $this->write_plugin_zip();
+		$this->mock_upload_response( 'upload-explicit-zip' );
+		App::setVar( 'QIT_JSON_MODE', true );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'  => 'run:woo-api',
+				'--remote' => true,
+				'--config' => $config_path,
+				'--zip'    => $zip_path,
+				'--json'   => true,
+			] );
+		} finally {
+			App::setVar( 'QIT_JSON_MODE', null );
+			unlink( $zip_path );
+			unlink( $config_path );
+		}
+
+		$this->assertSame( 'upload-explicit-zip', $options['upload_id'] );
+		$this->assertSame( 'cli_development_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'remote', $options );
+		$this->assertArrayNotHasKey( 'sut', $options );
+		$this->assertArrayNotHasKey( 'zip', $options );
 	}
 
 	public function test_woo_e2e_extension_set_prefers_woo_e2e_profile(): void {
