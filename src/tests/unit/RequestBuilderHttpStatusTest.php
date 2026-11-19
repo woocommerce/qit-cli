@@ -118,4 +118,31 @@ class RequestBuilderHttpStatusTest extends QITTestCase {
 
 		$this->assertSame( 'zip bytes', file_get_contents( $path ) );
 	}
+
+	public function test_download_file_429_fails_cleanly_without_html_snippet(): void {
+		$url  = 'https://qit.woo.com/wp-content/uploads/qit-test-packages/uuid/package.zip?signature=secret';
+		$path = $this->tmp_file_with( '' );
+		unlink( $path );
+
+		App::setVar( 'mock_' . $url, [
+			'status' => 429,
+			'body'   => '<!DOCTYPE html><html lang="en"><head><title>429 Too Many Requests</title></head><body>...</body></html>',
+		] );
+
+		try {
+			RequestBuilder::download_file( $url, $path );
+			$this->fail( 'Expected a RuntimeException for a rate-limited download.' );
+		} catch ( \RuntimeException $e ) {
+			$message = $e->getMessage();
+
+			// The user-facing message must be clean: no raw HTML, no signed-URL secrets.
+			$this->assertStringContainsString( '429', $message );
+			$this->assertStringNotContainsString( '<!DOCTYPE', $message );
+			$this->assertStringNotContainsString( '<html', $message );
+			$this->assertStringNotContainsString( 'signature=secret', $message );
+		}
+
+		// The partial error page must not be left on disk masquerading as a zip.
+		$this->assertFileNotExists( $path );
+	}
 }
