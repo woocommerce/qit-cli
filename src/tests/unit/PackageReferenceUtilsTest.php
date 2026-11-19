@@ -155,6 +155,38 @@ class PackageReferenceUtilsTest extends TestCase {
 	}
 
 	/**
+	 * Test expanding local path references to absolute paths.
+	 */
+	public function test_expand_local_path(): void {
+		// Absolute paths are returned unchanged.
+		$this->assertEquals( __DIR__, PackageReferenceUtils::expand_local_path( __DIR__ ) );
+		$this->assertEquals( '/this/path/does/not/exist', PackageReferenceUtils::expand_local_path( '/this/path/does/not/exist' ) );
+
+		// '.' resolves to the current working directory.
+		$this->assertEquals( realpath( getcwd() ), PackageReferenceUtils::expand_local_path( '.' ) );
+
+		// Non-existent relative paths fall back to manual construction from cwd.
+		$this->assertEquals(
+			getcwd() . '/./relative/does-not-exist',
+			PackageReferenceUtils::expand_local_path( './relative/does-not-exist' )
+		);
+		$this->assertEquals(
+			getcwd() . '/../does-not-exist',
+			PackageReferenceUtils::expand_local_path( '../does-not-exist' )
+		);
+
+		// Remote-looking references that don't resolve locally are unchanged.
+		$this->assertEquals(
+			'woocommerce/e2e:latest',
+			PackageReferenceUtils::expand_local_path( 'woocommerce/e2e:latest' )
+		);
+		$this->assertEquals(
+			'woocommerce/e2e/checkout:1.0.0',
+			PackageReferenceUtils::expand_local_path( 'woocommerce/e2e/checkout:1.0.0' )
+		);
+	}
+
+	/**
 	 * Test validating multiple references.
 	 */
 	public function test_validate_references(): void {
